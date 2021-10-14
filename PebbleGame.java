@@ -40,35 +40,31 @@ public class PebbleGame {
     /**
      * Method to read a CSV file of pebble weights into an ArrayList of pebbles
      * @param filename name of the CSV file with pebble weights
-     * @param bagIndex
+     * @param bagIndex bag number that is being read (e.g 0th bag, 1st bag, 2nd bag)
      * @return ArrayList of pebbles generated from the data in the CSV file
-     * @throws NumberFormatException
-     * @throws FileNotFoundException
+     * @throws NumberFormatException handles if the file is not in the correct format, e.g not comma separated integers
+     * @throws FileNotFoundException handles if the given file name can not be found
      */
     public static ArrayList<Pebble> readBag(String filename, int bagIndex) throws NumberFormatException, FileNotFoundException {
-        ArrayList<Pebble> pebbles = new ArrayList<>();
-
-        boolean positive = true;
+        ArrayList<Pebble> pebbles = new ArrayList<>(); //Creates a new array list pebbles to store the pebbles
 
         Scanner scanner = new Scanner(new File(filename));
-        scanner.useDelimiter(",");
+        scanner.useDelimiter(","); //Sets the delimiter to , as that is what separates values in a CSV file
 
-        while (scanner.hasNext()){
+        while (scanner.hasNext()){ //Iterates through CSV file for each item in the file
+            int weight = Integer.parseInt(scanner.next().strip()); //Gets the value and strips it of whitespace and then parses it to an int
 
-            int weight = Integer.parseInt(scanner.next().strip());
-
-            if(weight < 0){
+            if(weight < 0){ //Checks that the weight is positive. If not then throw an exception
                 throw new NumberFormatException();
             }
 
-            Pebble pebble = new Pebble(weight,bagIndex);
-
-            pebbles.add(pebble);
+            Pebble pebble = new Pebble(weight,bagIndex); //Creates a new pebble using the weight from the CSV file and the bag number it will be in
+            pebbles.add(pebble); //Adds the newly created pebble to the array list of pebbles
 
         }
 
-        scanner.close();
-        return pebbles;
+        scanner.close(); //Closes the scanner
+        return pebbles; //Returns the ArrayList of pebbles generated from the CSV file
     }
 
     public static void main(String[] args) {
