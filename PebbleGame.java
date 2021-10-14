@@ -46,6 +46,8 @@ public class PebbleGame {
 
                 valid = true;
 
+                System.out.println("Test commit line");
+
             } catch (InputMismatchException e) {
                 PebbleGame.playerNumError();
             }
