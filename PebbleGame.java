@@ -1,7 +1,9 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class PebbleGame {
@@ -12,25 +14,20 @@ public class PebbleGame {
         public void run() {}
     }
 
-    public static ArrayList<Pebble> readBag(String filename, int bagIndex) throws NumberFormatException {
+    public static ArrayList<Pebble> readBag(String filename, int bagIndex) throws NumberFormatException, FileNotFoundException {
         ArrayList<Pebble> pebbles = new ArrayList<>();
 
-        try {
-            Scanner scanner = new Scanner(new File(filename));
-            scanner.useDelimiter(",");
 
-            while (scanner.hasNext()){
+        Scanner scanner = new Scanner(new File(filename));
+        scanner.useDelimiter(",");
 
-                int weight = Integer.parseInt(scanner.next().strip());
+        while (scanner.hasNext()){
 
-                Pebble pebble = new Pebble(weight,bagIndex);
+            int weight = Integer.parseInt(scanner.next().strip());
 
-                pebbles.add(pebble);
+            Pebble pebble = new Pebble(weight,bagIndex);
 
-            }
-        } catch (FileNotFoundException e){
-            PebbleGame.csvNotFoundError();
-        } catch (NullPointerException e){
+            pebbles.add(pebble);
 
         }
 
@@ -50,6 +47,8 @@ public class PebbleGame {
         String bag1FilePath = null;
         String bag2FilePath = null;
 
+        final int numberOfBags = 3;
+        Bag[] blackBags = new Bag[numberOfBags];
 
         Bag X = null;
         Bag Y = null;
@@ -76,21 +75,39 @@ public class PebbleGame {
                 break;
             } catch (NumberFormatException e){
                 PebbleGame.csvFormatError();
+            } catch (FileNotFoundException e){
+                PebbleGame.csvNotFoundError();
             }
         }
 
         while (true) {
-
-            System.out.println("Enter the location of bag number 1 to load:");
-            bag1FilePath = reader.next();
-            Y = new Bag(readBag(bag1FilePath, 1));
+            try {
+                System.out.println("Enter the location of bag number 1 to load:");
+                bag0FilePath = reader.next();
+                Y = new Bag(readBag(bag0FilePath, 1));
+                break;
+            } catch (NumberFormatException e){
+                PebbleGame.csvFormatError();
+            } catch (FileNotFoundException e){
+                PebbleGame.csvNotFoundError();
+            }
         }
 
         while (true) {
-            System.out.println("Enter the location of bag number 2 to load:");
-            bag2FilePath = reader.next();
-            Z = new Bag(readBag(bag2FilePath, 2));
+            try {
+                System.out.println("Enter the location of bag number 2 to load:");
+                bag0FilePath = reader.next();
+                Z = new Bag(readBag(bag0FilePath, 2));
+                break;
+            } catch (NumberFormatException e){
+                PebbleGame.csvFormatError();
+            } catch (FileNotFoundException e){
+                PebbleGame.csvNotFoundError();
+            }
         }
+
+
+
 
     }
 
@@ -99,16 +116,17 @@ public class PebbleGame {
         Bag newBag;
         while (true){
             try {
-                System.out.println("Enter the location of bad number " + bagIndex + " to load:");
+                System.out.println("Enter the location of bag number " + bagIndex + " to load:");
                 String fPath = reader.next();
                 newBag = new Bag(readBag(fPath, bagIndex));
                 break;
 
             } catch (NumberFormatException e){
                 PebbleGame.csvFormatError();
+            } catch (FileNotFoundException e){
+                PebbleGame.csvNotFoundError();
             }
         }
-        reader.close();
         return newBag;
     }
 
