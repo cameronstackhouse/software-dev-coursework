@@ -1,18 +1,9 @@
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class PebbleGame {
 
     class Player implements Runnable{
-
-        private synchronized void draw(){}
-
-        private synchronized void discard(Bag bag){}
-
-        //private Bag[] getBlackBags(String fp0, String fp1, String fp2){
-
-        //}
 
         @Override
         public void run() {}
@@ -46,14 +37,11 @@ public class PebbleGame {
 
                 valid = true;
 
-                System.out.println("Test commit line");
-
             } catch (InputMismatchException e) {
                 PebbleGame.playerNumError();
             }
 
             System.out.println();
-
 
         }
 
