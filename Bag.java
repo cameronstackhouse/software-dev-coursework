@@ -11,10 +11,6 @@ public class Bag {
         return pebbles;
     }
 
-    public boolean isEmpty(){
-        return this.pebbles.isEmpty();
-    }
-
     public int valueOfPebbles(){
         int total = 0;
         for(int i = 0; i < pebbles.size(); i++){
