@@ -7,6 +7,15 @@ import java.util.Scanner;
 public class PebbleGame {
 
     class Player implements Runnable{
+        private Bag selectedBag;
+
+        public void setSelectedBag(Bag selectedBag) {
+            this.selectedBag = selectedBag;
+        }
+
+        public Bag getSelectedBag() {
+            return selectedBag;
+        }
 
         @Override
         public void run() {}
