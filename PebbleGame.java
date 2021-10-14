@@ -21,24 +21,41 @@ public class PebbleGame {
         public void run() {}
     }
 
-    public static ArrayList<Pebble> readBag(String filename, int bagIndex) throws NumberFormatException, FileNotFoundException {
+    public static ArrayList<Pebble> readCSV(String filename, int bagIndex) throws NumberFormatException, FileNotFoundException {
         ArrayList<Pebble> pebbles = new ArrayList<>();
-
 
         Scanner scanner = new Scanner(new File(filename));
         scanner.useDelimiter(",");
 
         while (scanner.hasNext()){
-
             int weight = Integer.parseInt(scanner.next().strip());
-
             Pebble pebble = new Pebble(weight,bagIndex);
-
             pebbles.add(pebble);
-
         }
 
+        scanner.close();
+
         return pebbles;
+    }
+
+    public static Bag createBlackBag(int bagIndex){
+        //TO DO: CHECK IF ANY NEGATIVE INTEGERS
+        Scanner reader = new Scanner(System.in);
+        Bag newBag;
+        while (true){
+            try {
+                System.out.println("Enter the location of bag number " + bagIndex + " to load:");
+                String fPath = reader.next();
+                newBag = new Bag(readCSV(fPath, bagIndex));
+                break;
+
+            } catch (NumberFormatException e){
+                PebbleGame.csvFormatError();
+            } catch (FileNotFoundException e){
+                PebbleGame.csvNotFoundError();
+            }
+        }
+        return newBag;
     }
 
     public static void main(String[] args) {
@@ -56,6 +73,7 @@ public class PebbleGame {
 
         final int numberOfBags = 3; //Number of black bags, set at 3 as this is how many are needed for the given program
         Bag[] blackBags = new Bag[numberOfBags]; //Array containing black bags
+        //Bag[] whiteBags = {Bag(new ArrayList<Pebble>};
 
         Bag X = null;
         Bag Y = null;
@@ -81,25 +99,6 @@ public class PebbleGame {
         }
     }
 
-    public static Bag createBlackBag(int bagIndex){
-        //TO DO: CHECK IF ANY NEGATIVE INTEGERS
-        Scanner reader = new Scanner(System.in);
-        Bag newBag;
-        while (true){
-            try {
-                System.out.println("Enter the location of bag number " + bagIndex + " to load:");
-                String fPath = reader.next();
-                newBag = new Bag(readBag(fPath, bagIndex));
-                break;
-
-            } catch (NumberFormatException e){
-                PebbleGame.csvFormatError();
-            } catch (FileNotFoundException e){
-                PebbleGame.csvNotFoundError();
-            }
-        }
-        return newBag;
-    }
 
     private static void playerNumError(){
         System.out.println("PebbleGame must be run with the 1st argument as a positive integer representing the number" +
