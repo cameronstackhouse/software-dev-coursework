@@ -1,9 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class PebbleGame {
@@ -47,15 +45,15 @@ public class PebbleGame {
         String bag1FilePath = null;
         String bag2FilePath = null;
 
-        final int numberOfBags = 3;
-        Bag[] blackBags = new Bag[numberOfBags];
+        final int numberOfBags = 3; //Number of black bags, set at 3 as this is how many are needed for the given program
+        Bag[] blackBags = new Bag[numberOfBags]; //Array containing black bags
 
         Bag X = null;
         Bag Y = null;
         Bag Z = null;
 
-
         //Gets the user input for the number of players and parses it as an int
+        //TO DO: CHECK IF USER ENTERS "E", IF SO THEN EXIT
         while (true){
             try {
                 System.out.println("Enter number of players:");
@@ -67,51 +65,15 @@ public class PebbleGame {
             }
         }
 
-        while (true) {
-            try {
-                System.out.println("Enter the location of bag number 0 to load:");
-                bag0FilePath = reader.next();
-                X = new Bag(readBag(bag0FilePath, 0));
-                break;
-            } catch (NumberFormatException e){
-                PebbleGame.csvFormatError();
-            } catch (FileNotFoundException e){
-                PebbleGame.csvNotFoundError();
-            }
+        //Calls the function createBag to get the users input and create a new bag from a given csv file
+        for(int i = 0; i < numberOfBags; i++){
+            Bag current = createBlackBag(i);
+            blackBags[i] = current;
         }
-
-        while (true) {
-            try {
-                System.out.println("Enter the location of bag number 1 to load:");
-                bag0FilePath = reader.next();
-                Y = new Bag(readBag(bag0FilePath, 1));
-                break;
-            } catch (NumberFormatException e){
-                PebbleGame.csvFormatError();
-            } catch (FileNotFoundException e){
-                PebbleGame.csvNotFoundError();
-            }
-        }
-
-        while (true) {
-            try {
-                System.out.println("Enter the location of bag number 2 to load:");
-                bag0FilePath = reader.next();
-                Z = new Bag(readBag(bag0FilePath, 2));
-                break;
-            } catch (NumberFormatException e){
-                PebbleGame.csvFormatError();
-            } catch (FileNotFoundException e){
-                PebbleGame.csvNotFoundError();
-            }
-        }
-
-
-
-
     }
 
-    public static Bag createBag(int bagIndex){
+    public static Bag createBlackBag(int bagIndex){
+        //TO DO: CHECK IF ANY NEGATIVE INTEGERS
         Scanner reader = new Scanner(System.in);
         Bag newBag;
         while (true){
