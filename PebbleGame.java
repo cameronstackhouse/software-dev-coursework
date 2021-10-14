@@ -10,6 +10,7 @@ public class PebbleGame {
 
         @Override
         public void run() {}
+
     }
 
     /**
@@ -18,7 +19,6 @@ public class PebbleGame {
      * @return
      */
     public static Bag createBlackBag(int bagIndex){
-        //TO DO: CHECK IF ANY NEGATIVE INTEGERS
         Scanner reader = new Scanner(System.in);
         Bag newBag;
         while (true){
