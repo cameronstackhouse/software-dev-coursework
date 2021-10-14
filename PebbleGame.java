@@ -7,37 +7,16 @@ import java.util.Scanner;
 public class PebbleGame {
 
     class Player implements Runnable{
-        private Bag selectedBag;
-
-        public void setSelectedBag(Bag selectedBag) {
-            this.selectedBag = selectedBag;
-        }
-
-        public Bag getSelectedBag() {
-            return selectedBag;
-        }
 
         @Override
         public void run() {}
     }
 
-    public static ArrayList<Pebble> readCSV(String filename, int bagIndex) throws NumberFormatException, FileNotFoundException {
-        ArrayList<Pebble> pebbles = new ArrayList<>();
-
-        Scanner scanner = new Scanner(new File(filename));
-        scanner.useDelimiter(",");
-
-        while (scanner.hasNext()){
-            int weight = Integer.parseInt(scanner.next().strip());
-            Pebble pebble = new Pebble(weight,bagIndex);
-            pebbles.add(pebble);
-        }
-
-        scanner.close();
-
-        return pebbles;
-    }
-
+    /**
+     *
+     * @param bagIndex
+     * @return
+     */
     public static Bag createBlackBag(int bagIndex){
         //TO DO: CHECK IF ANY NEGATIVE INTEGERS
         Scanner reader = new Scanner(System.in);
@@ -46,7 +25,7 @@ public class PebbleGame {
             try {
                 System.out.println("Enter the location of bag number " + bagIndex + " to load:");
                 String fPath = reader.next();
-                newBag = new Bag(readCSV(fPath, bagIndex));
+                newBag = new Bag(readBag(fPath, bagIndex));
                 break;
 
             } catch (NumberFormatException e){
@@ -56,6 +35,40 @@ public class PebbleGame {
             }
         }
         return newBag;
+    }
+
+    /**
+     * Method to read a CSV file of pebble weights into an ArrayList of pebbles
+     * @param filename name of the CSV file with pebble weights
+     * @param bagIndex
+     * @return ArrayList of pebbles generated from the data in the CSV file
+     * @throws NumberFormatException
+     * @throws FileNotFoundException
+     */
+    public static ArrayList<Pebble> readBag(String filename, int bagIndex) throws NumberFormatException, FileNotFoundException {
+        ArrayList<Pebble> pebbles = new ArrayList<>();
+
+        boolean positive = true;
+
+        Scanner scanner = new Scanner(new File(filename));
+        scanner.useDelimiter(",");
+
+        while (scanner.hasNext()){
+
+            int weight = Integer.parseInt(scanner.next().strip());
+
+            if(weight < 0){
+                throw new NumberFormatException();
+            }
+
+            Pebble pebble = new Pebble(weight,bagIndex);
+
+            pebbles.add(pebble);
+
+        }
+
+        scanner.close();
+        return pebbles;
     }
 
     public static void main(String[] args) {
@@ -73,22 +86,23 @@ public class PebbleGame {
 
         final int numberOfBags = 3; //Number of black bags, set at 3 as this is how many are needed for the given program
         Bag[] blackBags = new Bag[numberOfBags]; //Array containing black bags
-        //Bag[] whiteBags = {Bag(new ArrayList<Pebble>};
 
         Bag X = null;
         Bag Y = null;
         Bag Z = null;
 
         //Gets the user input for the number of players and parses it as an int
-        //TO DO: CHECK IF USER ENTERS "E", IF SO THEN EXIT
+        //TO DO: CHECK IF USER ENTERS "E", IF SO THEN EXIT. ALSO DECIMAL NUMBERS
         while (true){
             try {
                 System.out.println("Enter number of players:");
                 int numPlayers = reader.nextInt();
+                if(numPlayers <= 0){
+                    throw new IllegalArgumentException();
+                }
                 break;
-            } catch (InputMismatchException e){
+            } catch (InputMismatchException | IllegalArgumentException e){
                 PebbleGame.playerNumError();
-                reader.next();
             }
         }
 
@@ -100,15 +114,24 @@ public class PebbleGame {
     }
 
 
+    /**
+     * Method containing an error message if the user enters an invalid number of players
+     */
     private static void playerNumError(){
         System.out.println("PebbleGame must be run with the 1st argument as a positive integer representing the number" +
                 " of players playing the game.");
     }
 
+    /**
+     *
+     */
     private static void csvFormatError(){
-        System.out.println("CSV file in an incorrect format, ensure the file consists of integers separated by commas.");
+        System.out.println("CSV file in an incorrect format, ensure the file consists of positive integers separated by commas.");
     }
 
+    /**
+     *
+     */
     private static void csvNotFoundError(){
         System.out.println("No such file exists.");
     }
