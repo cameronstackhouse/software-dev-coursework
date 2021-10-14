@@ -1,14 +1,14 @@
 public class Pebble {
     private int weight;
-    private int baxIndex;
+    private int bagIndex;
 
-    public Pebble(int weight, int baxIndex){
+    public Pebble(int weight, int bagIndex){
         this.weight = weight;
-        this.baxIndex = baxIndex;
+        this.bagIndex = bagIndex;
     }
 
-    public int getBaxIndex() {
-        return baxIndex;
+    public int getBagIndex() {
+        return bagIndex;
     }
 
     public int getWeight() {
