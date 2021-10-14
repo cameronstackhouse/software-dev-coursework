@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class PebbleGame {
 
     class Player implements Runnable{
+        private Bag[] hand;
 
         @Override
         public void run() {}
@@ -14,11 +15,13 @@ public class PebbleGame {
     }
 
     /**
-     *
-     * @param bagIndex
-     * @return
+     * Method to create a black bag. The method internally asks for the user input of file name
+     * @param bagIndex black bag number (e.g 0th bag, 1st bag, 2nd bag)
+     * @param numberOfPlayers number of players playing the game. Used to calculate if the amount of pebbles in each bag
+     *                        is sufficient
+     * @return Bag object containing pebbles
      */
-    public static Bag createBlackBag(int bagIndex){
+    public static Bag createBlackBag(int bagIndex, int numberOfPlayers){
         Scanner reader = new Scanner(System.in);
         Bag newBag;
         while (true){
@@ -26,12 +29,18 @@ public class PebbleGame {
                 System.out.println("Enter the location of bag number " + bagIndex + " to load:");
                 String fPath = reader.next();
                 newBag = new Bag(readBag(fPath, bagIndex));
+
+                if(newBag.getPebbles().size() < 11*numberOfPlayers){
+                    throw new IllegalArgumentException();
+                }
                 break;
 
             } catch (NumberFormatException e){
                 PebbleGame.csvFormatError();
             } catch (FileNotFoundException e){
                 PebbleGame.csvNotFoundError();
+            } catch (IllegalArgumentException e){
+                PebbleGame.pebbleNumError(numberOfPlayers);
             }
         }
         return newBag;
@@ -52,6 +61,7 @@ public class PebbleGame {
         scanner.useDelimiter(","); //Sets the delimiter to , as that is what separates values in a CSV file
 
         while (scanner.hasNext()){ //Iterates through CSV file for each item in the file
+            //CHECK FOR E
             int weight = Integer.parseInt(scanner.next().strip()); //Gets the value and strips it of whitespace and then parses it to an int
 
             if(weight < 0){ //Checks that the weight is positive. If not then throw an exception
@@ -76,23 +86,16 @@ public class PebbleGame {
 
         Scanner reader = new Scanner(System.in);
 
-        String bag0FilePath = null;
-        String bag1FilePath = null;
-        String bag2FilePath = null;
-
         final int numberOfBags = 3; //Number of black bags, set at 3 as this is how many are needed for the given program
         Bag[] blackBags = new Bag[numberOfBags]; //Array containing black bags
 
-        Bag X = null;
-        Bag Y = null;
-        Bag Z = null;
-
+        int numPlayers;
         //Gets the user input for the number of players and parses it as an int
         //TO DO: CHECK IF USER ENTERS "E", IF SO THEN EXIT. ALSO DECIMAL NUMBERS
         while (true){
             try {
                 System.out.println("Enter number of players:");
-                int numPlayers = reader.nextInt();
+                numPlayers = reader.nextInt();
                 if(numPlayers <= 0){
                     throw new IllegalArgumentException();
                 }
@@ -104,7 +107,7 @@ public class PebbleGame {
 
         //Calls the function createBag to get the users input and create a new bag from a given csv file
         for(int i = 0; i < numberOfBags; i++){
-            Bag current = createBlackBag(i);
+            Bag current = createBlackBag(i, numPlayers);
             blackBags[i] = current;
         }
     }
@@ -130,6 +133,11 @@ public class PebbleGame {
      */
     private static void csvNotFoundError(){
         System.out.println("No such file exists.");
+    }
+
+    private static void pebbleNumError(int playerNum){
+        System.out.println("Number of pebbles in each bag must be at least 11 times that of the number of players" +
+                " which is: " + 11*playerNum);
     }
 
 }

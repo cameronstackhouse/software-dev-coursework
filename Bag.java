@@ -7,6 +7,10 @@ public class Bag {
         this.pebbles = pebbles;
     }
 
+    public ArrayList<Pebble> getPebbles() {
+        return pebbles;
+    }
+
     public boolean isEmpty(){
         return this.pebbles.isEmpty();
     }
