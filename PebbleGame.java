@@ -91,25 +91,24 @@ public class PebbleGame {
 
         int numPlayers;
         //Gets the user input for the number of players and parses it as an int
-        //TO DO: CHECK IF USER ENTERS "E", IF SO THEN EXIT. ALSO DECIMAL NUMBERS
-        while (true){
+        while (true){ //Repeats until break statement called
             try {
                 String userInput;
                 System.out.println("Enter number of players:");
-                userInput = reader.next();
+                userInput = reader.next(); //Gets the user input
 
-                if(userInput.equals("E")){
-                    System.exit(0);
+                if(userInput.equals("E")){ //Checks if the user has entered exit condition
+                    System.exit(0); //Ends the program
                 } else {
-                    numPlayers = Integer.parseInt(userInput);
-                    if(numPlayers <= 0){
-                        throw new IllegalArgumentException();
+                    numPlayers = Integer.parseInt(userInput); //Parses the input as an integer
+                    if(numPlayers <= 0){ //Checks if the input is a valid number of players
+                        throw new IllegalArgumentException(); //If not throw an exception
                     }
-                    break;
+                    break; //If all conditions met then break out of the while loop
                 }
 
             } catch (InputMismatchException | IllegalArgumentException e){
-                PebbleGame.playerNumError();
+                PebbleGame.playerNumError(); //Displays an error message
             }
         }
 
