@@ -7,7 +7,6 @@ import java.util.Scanner;
 public class PebbleGame {
 
     class Player implements Runnable{
-        private Bag[] hand;
 
         @Override
         public void run() {}
@@ -22,16 +21,21 @@ public class PebbleGame {
      * @return Bag object containing pebbles
      */
     public static Bag createBlackBag(int bagIndex, int numberOfPlayers){
-        Scanner reader = new Scanner(System.in);
+        Scanner reader = new Scanner(System.in); //Creates a new scanner for user input
         Bag newBag;
-        while (true){
+        while (true){ //Repeats infinitely until break statement called
             try {
                 System.out.println("Enter the location of bag number " + bagIndex + " to load:");
-                String fPath = reader.next();
-                newBag = new Bag(readBag(fPath, bagIndex));
+                String fPath = reader.next(); //Gets user input
 
-                if(newBag.getPebbles().size() < 11*numberOfPlayers){
-                    throw new IllegalArgumentException();
+                if(fPath.equals("E")){ //Checks if user has entered the exit code
+                    System.exit(0);
+                }
+
+                newBag = new Bag(readCSVToBag(fPath, bagIndex)); //Creates a new bag by reading the CSV file specified
+
+                if(newBag.getPebbles().size() < 11*numberOfPlayers){ //Checks that the number of pebbles in the bag is valid
+                    throw new IllegalArgumentException(); //If not then throw an exception
                 }
                 break;
 
@@ -43,6 +47,8 @@ public class PebbleGame {
                 PebbleGame.pebbleNumError(numberOfPlayers);
             }
         }
+
+        reader.close(); //Closes reader
         return newBag;
     }
 
@@ -54,14 +60,14 @@ public class PebbleGame {
      * @throws NumberFormatException handles if the file is not in the correct format, e.g not comma separated integers
      * @throws FileNotFoundException handles if the given file name can not be found
      */
-    public static ArrayList<Pebble> readBag(String filename, int bagIndex) throws NumberFormatException, FileNotFoundException {
+    public static ArrayList<Pebble> readCSVToBag(String filename, int bagIndex) throws NumberFormatException, FileNotFoundException {
         ArrayList<Pebble> pebbles = new ArrayList<>(); //Creates a new array list pebbles to store the pebbles
 
         Scanner scanner = new Scanner(new File(filename));
         scanner.useDelimiter(","); //Sets the delimiter to , as that is what separates values in a CSV file
 
         while (scanner.hasNext()){ //Iterates through CSV file for each item in the file
-            //CHECK FOR E
+
             int weight = Integer.parseInt(scanner.next().strip()); //Gets the value and strips it of whitespace and then parses it to an int
 
             if(weight < 0){ //Checks that the weight is positive. If not then throw an exception
@@ -86,8 +92,8 @@ public class PebbleGame {
 
         Scanner reader = new Scanner(System.in);
 
-        final int numberOfBags = 3; //Number of black bags, set at 3 as this is how many are needed for the given program
-        Bag[] blackBags = new Bag[numberOfBags]; //Array containing black bags
+        final int numberOfBlackBags = 3; //Number of black bags, set at 3 as this is how many are needed for the given program
+        Bag[] blackBags = new Bag[numberOfBlackBags]; //Array containing black bags
 
         int numPlayers;
         //Gets the user input for the number of players and parses it as an int
@@ -113,7 +119,7 @@ public class PebbleGame {
         }
 
         //Calls the function createBag to get the users input and create a new bag from a given csv file
-        for(int i = 0; i < numberOfBags; i++){
+        for(int i = 0; i < numberOfBlackBags; i++){
             Bag current = createBlackBag(i, numPlayers);
             blackBags[i] = current;
         }
