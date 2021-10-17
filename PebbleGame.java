@@ -84,6 +84,10 @@ public class PebbleGame {
         return newBag;
     }
 
+    public static int getNumPlayers(){
+
+    }
+
 
     public static void main(String[] args) {
 
@@ -92,10 +96,11 @@ public class PebbleGame {
                 " in turn containing comma separated integer values for the pebble weights. \nThe integer values must be" +
                 " strictly positive. The game will then be simulated, and output written to files in this directory.");
 
-        Scanner reader = new Scanner(System.in);
 
         final int numberOfBlackBags = 3; //Number of black bags, set at 3 as this is how many are needed for the given program
         Bag[] blackBags = new Bag[numberOfBlackBags]; //Array containing black bags
+
+        Scanner reader = new Scanner(System.in);
 
         int numPlayers;
         //Gets the user input for the number of players and parses it as an int
