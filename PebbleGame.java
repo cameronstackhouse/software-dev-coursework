@@ -6,50 +6,12 @@ import java.util.Scanner;
 
 public class PebbleGame {
 
+
     class Player implements Runnable{
 
         @Override
         public void run() {}
 
-    }
-
-    /**
-     * Method to create a black bag. The method internally asks for the user input of file name
-     * @param bagIndex black bag number (e.g 0th bag, 1st bag, 2nd bag)
-     * @param numberOfPlayers number of players playing the game. Used to calculate if the amount of pebbles in each bag
-     *                        is sufficient
-     * @return Bag object containing pebbles
-     */
-    public static Bag createBlackBag(int bagIndex, int numberOfPlayers){
-        Scanner reader = new Scanner(System.in); //Creates a new scanner for user input
-        Bag newBag;
-        while (true){ //Repeats infinitely until break statement called
-            try {
-                System.out.println("Enter the location of bag number " + bagIndex + " to load:");
-                String fPath = reader.next(); //Gets user input
-
-                if(fPath.equals("E")){ //Checks if user has entered the exit code
-                    System.exit(0);
-                }
-
-                newBag = new Bag(readCSVToBag(fPath, bagIndex)); //Creates a new bag by reading the CSV file specified
-
-                if(newBag.getPebbles().size() < 11*numberOfPlayers){ //Checks that the number of pebbles in the bag is valid
-                    throw new IllegalArgumentException(); //If not then throw an exception
-                }
-                break;
-
-            } catch (NumberFormatException e){
-                PebbleGame.csvFormatError();
-            } catch (FileNotFoundException e){
-                PebbleGame.csvNotFoundError();
-            } catch (IllegalArgumentException e){
-                PebbleGame.pebbleNumError(numberOfPlayers);
-            }
-        }
-
-        reader.close(); //Closes reader
-        return newBag;
     }
 
     /**
@@ -83,6 +45,46 @@ public class PebbleGame {
         return pebbles; //Returns the ArrayList of pebbles generated from the CSV file
     }
 
+    /**
+     * Method to create a black bag. The method internally asks for the user input of file name
+     * @param bagIndex black bag number (e.g 0th bag, 1st bag, 2nd bag)
+     * @param numberOfPlayers number of players playing the game. Used to calculate if the amount of pebbles in each bag
+     *                        is sufficient
+     * @return Bag object containing pebbles
+     */
+    public static Bag createBlackBag(int bagIndex, int numberOfPlayers){
+        Scanner reader = new Scanner(System.in); //Creates a new scanner for user input
+        Bag newBag;
+        while (true){ //Repeats infinitely until break statement called
+            try {
+                System.out.println("Enter the location of bag number " + bagIndex + " to load:");
+                String fPath = reader.nextLine(); //Gets user input
+
+                if(fPath.equals("E")){ //Checks if user has entered the exit code
+                    System.exit(0);
+                }
+
+                newBag = new Bag(readCSVToBag(fPath, bagIndex)); //Creates a new bag by reading the CSV file specified
+
+                if(newBag.getPebbles().size() < 11*numberOfPlayers){ //Checks that the number of pebbles in the bag is valid
+                    throw new IllegalArgumentException(); //If not then throw an exception
+                }
+                break;
+
+            } catch (NumberFormatException e){
+                PebbleGame.csvFormatError();
+            } catch (FileNotFoundException e){
+                PebbleGame.csvNotFoundError();
+            } catch (IllegalArgumentException e){
+                PebbleGame.pebbleNumError(numberOfPlayers);
+            }
+        }
+
+        reader.close(); //Closes reader
+        return newBag;
+    }
+
+
     public static void main(String[] args) {
 
         System.out.println("Welcome to the Pebble Game!");
@@ -101,7 +103,7 @@ public class PebbleGame {
             try {
                 String userInput;
                 System.out.println("Enter number of players:");
-                userInput = reader.next(); //Gets the user input
+                userInput = reader.nextLine(); //Gets the user input
 
                 if(userInput.equals("E")){ //Checks if the user has entered exit condition
                     System.exit(0); //Ends the program
@@ -148,6 +150,10 @@ public class PebbleGame {
         System.out.println("No such file exists.");
     }
 
+    /**
+     *
+     * @param playerNum
+     */
     private static void pebbleNumError(int playerNum){
         System.out.println("Number of pebbles in each bag must be at least 11 times that of the number of players" +
                 " which is: " + 11*playerNum);
