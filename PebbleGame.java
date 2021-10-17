@@ -6,7 +6,6 @@ import java.util.Scanner;
 
 public class PebbleGame {
 
-
     class Player implements Runnable{
 
         @Override
@@ -113,7 +112,6 @@ public class PebbleGame {
             }
         }
 
-
         return numPlayers;
     }
 
@@ -127,20 +125,24 @@ public class PebbleGame {
 
 
         final int numberOfEachBag = 3; //Number of black bags, set at 3 as this is how many are needed for the given program
+
+        //Index of black bag in the black bags array corresponds with the index of its corresponding white bag in the
+        //White bag array.
+
         Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
-        Bag[] whiteBags = new Bag[numberOfEachBag];
+        Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
 
         Scanner reader = new Scanner(System.in); //Creates a new scanner for user input
 
-        int numPlayers = getNumPlayers(reader);
+        int numPlayers = getNumPlayers(reader); //Calls the function getNumPlayers to get the user entered number of players
 
         //Calls the function createBag to get the users input and create a new bag from a given csv file
-        for(int i = 0; i < numberOfEachBag; i++){
-            Bag current = createBlackBag(i, numPlayers, reader);
-            blackBags[i] = current;
+        for(int i = 0; i < numberOfEachBag; i++){ //Creates each black bag one at a time depending on how many bags needed (In this case 3)
+            Bag current = createBlackBag(i, numPlayers, reader); //Creates the black bag using the createBlackBag method
+            blackBags[i] = current; //Adds the black bag to the black bag array
         }
 
-        reader.close();
+        reader.close(); //Closes the reader after all user data has been inputted
     }
 
 
@@ -167,8 +169,8 @@ public class PebbleGame {
     }
 
     /**
-     *
-     * @param playerNum
+     * Method containing an error message if the number of pebbles in each bag is too small
+     * @param playerNum player number entered by the user
      */
     private static void pebbleNumError(int playerNum){
         System.out.println("Number of pebbles in each bag must be at least 11 times that of the number of players" +

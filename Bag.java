@@ -11,12 +11,4 @@ public class Bag {
         return pebbles;
     }
 
-    public int valueOfPebbles(){
-        int total = 0;
-        for(int i = 0; i < pebbles.size(); i++){
-            total += pebbles.get(i).getWeight();
-        }
-
-        return total;
-    }
 }
