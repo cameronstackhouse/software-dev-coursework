@@ -50,10 +50,10 @@ public class PebbleGame {
      * @param bagIndex black bag number (e.g 0th bag, 1st bag, 2nd bag)
      * @param numberOfPlayers number of players playing the game. Used to calculate if the amount of pebbles in each bag
      *                        is sufficient
+     * @param reader scanner to get user input passed in
      * @return Bag object containing pebbles
      */
-    public static Bag createBlackBag(int bagIndex, int numberOfPlayers){
-        Scanner reader = new Scanner(System.in); //Creates a new scanner for user input
+    public static Bag createBlackBag(int bagIndex, int numberOfPlayers, Scanner reader){
         Bag newBag;
         while (true){ //Repeats infinitely until break statement called
             try {
@@ -80,12 +80,15 @@ public class PebbleGame {
             }
         }
 
-        reader.close(); //Closes reader
         return newBag;
     }
 
-    public static int getNumPlayers(){
-        Scanner reader = new Scanner(System.in);
+    /**
+     * Gets the user input for total number of players until the input is valid
+     * @param reader scanner to get user input passed in
+     * @return number of players playing the game
+     */
+    public static int getNumPlayers(Scanner reader){
 
         int numPlayers;
         //Gets the user input for the number of players and parses it as an int
@@ -110,7 +113,6 @@ public class PebbleGame {
             }
         }
 
-        reader.close();
 
         return numPlayers;
     }
@@ -124,16 +126,21 @@ public class PebbleGame {
                 " strictly positive. The game will then be simulated, and output written to files in this directory.");
 
 
-        final int numberOfBlackBags = 3; //Number of black bags, set at 3 as this is how many are needed for the given program
-        Bag[] blackBags = new Bag[numberOfBlackBags]; //Array containing black bags
+        final int numberOfEachBag = 3; //Number of black bags, set at 3 as this is how many are needed for the given program
+        Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
+        Bag[] whiteBags = new Bag[numberOfEachBag];
 
-        int numPlayers = getNumPlayers();
+        Scanner reader = new Scanner(System.in); //Creates a new scanner for user input
+
+        int numPlayers = getNumPlayers(reader);
 
         //Calls the function createBag to get the users input and create a new bag from a given csv file
-        for(int i = 0; i < numberOfBlackBags; i++){
-            Bag current = createBlackBag(i, numPlayers);
+        for(int i = 0; i < numberOfEachBag; i++){
+            Bag current = createBlackBag(i, numPlayers, reader);
             blackBags[i] = current;
         }
+
+        reader.close();
     }
 
 
@@ -146,14 +153,14 @@ public class PebbleGame {
     }
 
     /**
-     *
+     * Method containing an error message if the format of the CSV file is invalid
      */
     private static void csvFormatError(){
         System.out.println("CSV file in an incorrect format, ensure the file consists of positive integers separated by commas.");
     }
 
     /**
-     *
+     * Method containing an error message if the CSV file can't be found with a given filepath
      */
     private static void csvNotFoundError(){
         System.out.println("No such file exists.");
