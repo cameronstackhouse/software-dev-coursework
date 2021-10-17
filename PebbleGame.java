@@ -6,6 +6,9 @@ import java.util.Scanner;
 
 public class PebbleGame {
 
+    /**
+     * Class representing a player of the game
+     */
     class Player implements Runnable{
 
         @Override
@@ -68,13 +71,14 @@ public class PebbleGame {
                 if(newBag.getPebbles().size() < 11*numberOfPlayers){ //Checks that the number of pebbles in the bag is valid
                     throw new IllegalArgumentException(); //If not then throw an exception
                 }
-                break;
 
-            } catch (NumberFormatException e){
+                break; //Breaks from infinite while loop if the black bag is valid
+
+            } catch (NumberFormatException e){ //Catches if the CSV file is in the wrong format
                 PebbleGame.csvFormatError();
-            } catch (FileNotFoundException e){
+            } catch (FileNotFoundException e){ //Catches if the CSV file does not exist
                 PebbleGame.csvNotFoundError();
-            } catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e){ //Catches if the number of pebbles is invalid
                 PebbleGame.pebbleNumError(numberOfPlayers);
             }
         }
