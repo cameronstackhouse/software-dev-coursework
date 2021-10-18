@@ -2,18 +2,52 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.Random;
 import java.util.Scanner;
 
 public class PebbleGame {
+    static volatile boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
 
     /**
      * Class representing a player of the game
      */
-    class Player implements Runnable{
+    static class Player implements Runnable{
+        private ArrayList<Pebble> hand; //Represents users hand containing pebbles
+
+        public Player(){
+            this.hand = new ArrayList<Pebble>();
+        }
+
+        /**
+         * Method to get the weight value of the players hand
+         * @return the weight value of the players hand
+         */
+        public int getHandValue(){
+            int total = 0;
+
+            for(int i = 0; i < hand.size(); i++){ //Iterates through hand
+                total += hand.get(i).getWeight(); //Adds weight of current pebble to total
+            }
+
+            return total;
+        }
 
         @Override
-        public void run() {}
+        public void run() {
+            Random rand = new Random();
+            //initialHand()
 
+            while (!won){ //Repeats until the won condition has been met
+                if(getHandValue() == 100){ //Checks if hand value is 100
+                    won = true;
+                } else {
+                    int discardIndex = rand.nextInt(hand.size()); //Gets the index of a random pebble to be discarded
+
+                    //discard(discardIndex)
+                    //draw()
+                }
+            }
+        }
     }
 
     /**
@@ -147,6 +181,11 @@ public class PebbleGame {
         }
 
         reader.close(); //Closes the reader after all user data has been inputted
+
+        for(int i = 0; i < numPlayers; i++){ //Loops for the total number of players
+            (new Thread((new Player()))).start(); //Creates a new thread and a new player and starts it
+        }
+
     }
 
 
