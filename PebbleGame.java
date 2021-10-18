@@ -8,6 +8,7 @@ import java.util.Scanner;
 public class PebbleGame {
     static volatile boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
 
+
     /**
      * Class representing a player of the game
      */
@@ -47,6 +48,13 @@ public class PebbleGame {
                     //draw()
                 }
             }
+        }
+
+        public void discard(int index) {
+            Pebble removedPebble = hand.get(index);
+            hand.remove(index);
+            int bagIndex = removedPebble.getBagIndex();
+
         }
     }
 
@@ -178,6 +186,11 @@ public class PebbleGame {
         for(int i = 0; i < numberOfEachBag; i++){ //Creates each black bag one at a time depending on how many bags needed (In this case 3)
             Bag current = createBlackBag(i, numPlayers, reader); //Creates the black bag using the createBlackBag method
             blackBags[i] = current; //Adds the black bag to the black bag array
+        }
+
+        //Fills the white bag array with empty bags
+        for(int i = 0; i < numberOfEachBag; i++){
+            whiteBags[i] = new Bag(new ArrayList<Pebble>());
         }
 
         reader.close(); //Closes the reader after all user data has been inputted
