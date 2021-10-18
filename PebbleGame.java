@@ -7,13 +7,16 @@ import java.util.Scanner;
 
 public class PebbleGame {
     static volatile boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
-
+    static final int numberOfEachBag = 3; //Number of each bag (In this case 3)
+    static Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
+    static Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
 
     /**
      * Class representing a player of the game
      */
     static class Player implements Runnable{
         private ArrayList<Pebble> hand; //Represents users hand containing pebbles
+
 
         public Player(){
             this.hand = new ArrayList<Pebble>();
@@ -33,10 +36,41 @@ public class PebbleGame {
             return total;
         }
 
+        /**
+         * Method to discard a pebble from the players hand into the pebbles corresponding white bag from where it was drawn from
+         * @param index number of the pebble in the players hand
+         */
+        public void discard(int index) {
+            Pebble removedPebble = hand.get(index);
+            hand.remove(index);
+            int bagIndex = removedPebble.getBagIndex();
+            whiteBags[bagIndex].getPebbles().add(removedPebble);
+        }
+
+        public void draw(Bag blackBag){
+
+        }
+
+        /**
+         * Method to refill a black bag using its corresponding
+         * @param blackBag bag to be refilled
+         */
+        public void refill(Bag blackBag){
+            int bagIndex = blackBag.getBagIndex(); //Gets the index of the black bag in the array (to get the corresponding white bag)
+            Bag whiteBagAtIndex = whiteBags[bagIndex]; //Gets the white bag at the corresponding black bag index
+            blackBag.setPebbles(whiteBagAtIndex.getPebbles()); //Sets the black bag pebbles to be the corresponding white bag pebbles
+            whiteBagAtIndex.setPebbles(new ArrayList<>()); //Clears the white bags pebble array list
+        }
+
         @Override
         public void run() {
             Random rand = new Random();
-            //initialHand()
+            //initial hand code:
+            Bag blackBagSelection = blackBags[rand.nextInt(numberOfEachBag)];
+
+            for(int i = 0; i < 10; i++){
+                //draw(blackBagSelection);
+            }
 
             while (!won){ //Repeats until the won condition has been met
                 if(getHandValue() == 100){ //Checks if hand value is 100
@@ -44,18 +78,12 @@ public class PebbleGame {
                 } else {
                     int discardIndex = rand.nextInt(hand.size()); //Gets the index of a random pebble to be discarded
 
-                    //discard(discardIndex)
-                    //draw()
+                    discard(discardIndex);
+                    //draw(Bag (random bag))
                 }
             }
         }
 
-        public void discard(int index) {
-            Pebble removedPebble = hand.get(index);
-            hand.remove(index);
-            int bagIndex = removedPebble.getBagIndex();
-
-        }
     }
 
     /**
@@ -108,7 +136,7 @@ public class PebbleGame {
                     System.exit(0);
                 }
 
-                newBag = new Bag(readCSVToBag(fPath, bagIndex)); //Creates a new bag by reading the CSV file specified
+                newBag = new Bag(readCSVToBag(fPath, bagIndex), bagIndex); //Creates a new bag by reading the CSV file specified
 
                 if(newBag.getPebbles().size() < 11*numberOfPlayers){ //Checks that the number of pebbles in the bag is valid
                     throw new IllegalArgumentException(); //If not then throw an exception
@@ -170,13 +198,9 @@ public class PebbleGame {
                 " strictly positive. The game will then be simulated, and output written to files in this directory.");
 
 
-        final int numberOfEachBag = 3; //Number of black bags, set at 3 as this is how many are needed for the given program
 
         //Index of black bag in the black bags array corresponds with the index of its corresponding white bag in the
         //White bag array.
-
-        Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
-        Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
 
         Scanner reader = new Scanner(System.in); //Creates a new scanner for user input
 
@@ -190,7 +214,7 @@ public class PebbleGame {
 
         //Fills the white bag array with empty bags
         for(int i = 0; i < numberOfEachBag; i++){
-            whiteBags[i] = new Bag(new ArrayList<Pebble>());
+            whiteBags[i] = new Bag(new ArrayList<Pebble>(), i);
         }
 
         reader.close(); //Closes the reader after all user data has been inputted
