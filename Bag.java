@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 
+import java.util.ArrayList;
+
 public class Bag {
     ArrayList<Pebble> pebbles;
     int bagIndex;

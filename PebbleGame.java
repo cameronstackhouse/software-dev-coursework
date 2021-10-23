@@ -16,9 +16,11 @@ public class PebbleGame {
      */
     static class Player implements Runnable{
         private ArrayList<Pebble> hand; //Represents users hand containing pebbles
+        private String name;
 
-        public Player(){
+        public Player(String name){
             this.hand = new ArrayList<>();
+            this.name = name;
         }
 
         /**
@@ -48,7 +50,7 @@ public class PebbleGame {
             Random rand = new Random();
             synchronized (this) {
                 if(blackBag.isEmpty()) {
-                    refill(blackBag);
+                    refill(blackBag); //DOES NOT WORK
                 } else {
                     int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size());
                     Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex);
@@ -266,7 +268,7 @@ public class PebbleGame {
         reader.close(); //Closes the reader after all user data has been inputted
 
         for(int i = 0; i < numPlayers; i++){ //Loops for the total number of players
-            (new Thread((new Player()))).start(); //Creates a new thread and a new player and starts it
+            (new Thread((new Player("Player" + i)))).start(); //Creates a new thread and a new player and starts it
         }
 
     }
