@@ -8,8 +8,8 @@ import java.util.Scanner;
 public class PebbleGame {
     static volatile boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
     static final int numberOfEachBag = 3; //Number of each bag (In this case 3)
-    static Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
-    static Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
+    static volatile Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
+    static volatile Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
 
     /**
      * Class representing a player of the game
@@ -35,10 +35,7 @@ public class PebbleGame {
             return total;
         }
 
-        /**
-         * Method to discard a pebble from the players hand into the pebbles corresponding white bag from where it was drawn from
-         * @param index number of the pebble in the players hand
-         */
+
         public void discard(int index) {
             Pebble removedPebble = this.hand.get(index);
             this.hand.remove(index);
@@ -48,7 +45,17 @@ public class PebbleGame {
 
 
         public void draw(Bag blackBag){
-
+            Random rand = new Random();
+            synchronized (this) {
+                if(blackBag.isEmpty()) {
+                    refill(blackBag);
+                } else {
+                    int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size());
+                    Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex);
+                    blackBag.getPebbles().remove(randPebbleIndex);
+                    hand.add(randomPebble);
+                }
+            }
         }
 
         /**
@@ -73,16 +80,21 @@ public class PebbleGame {
             }
 
             while (!won){ //Repeats until the won condition has been met
+                System.out.println(Thread.currentThread().getName() + ": " + getHandValue());
                 if(getHandValue() == 100){ //Checks if hand value is 100
                     won = true;
+                    System.out.println(Thread.currentThread().getName() + " WON!");
                 } else {
-                    //int discardIndex = rand.nextInt(hand.size()); //Gets the index of a random pebble to be discarded
+                    //Discards a random pebble from the players hand into corresponding white bag from the black bag in which the pebble was drawn from
+                    int randomPebbleIndex = rand.nextInt(hand.size());
 
-                    //discard(discardIndex);
+                    discard(randomPebbleIndex);
 
-                    //int blackBagIndex = rand.nextInt(blackBags.length);
+                    //Draws a pebble from a random black bag
+                    int randomPebbleBag = rand.nextInt(blackBags.length);
+                    Bag bagToDrawFrom = blackBags[randomPebbleBag];
 
-                    //draw(blackBags[blackBagIndex]);
+                    draw(bagToDrawFrom);
                 }
             }
         }
