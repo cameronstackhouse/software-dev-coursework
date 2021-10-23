@@ -17,9 +17,8 @@ public class PebbleGame {
     static class Player implements Runnable{
         private ArrayList<Pebble> hand; //Represents users hand containing pebbles
 
-
         public Player(){
-            this.hand = new ArrayList<Pebble>();
+            this.hand = new ArrayList<>();
         }
 
         /**
@@ -41,11 +40,12 @@ public class PebbleGame {
          * @param index number of the pebble in the players hand
          */
         public void discard(int index) {
-            Pebble removedPebble = hand.get(index);
-            hand.remove(index);
+            Pebble removedPebble = this.hand.get(index);
+            this.hand.remove(index);
             int bagIndex = removedPebble.getBagIndex();
             whiteBags[bagIndex].getPebbles().add(removedPebble);
         }
+
 
         public void draw(Bag blackBag){
 
@@ -69,17 +69,20 @@ public class PebbleGame {
             Bag blackBagSelection = blackBags[rand.nextInt(numberOfEachBag)];
 
             for(int i = 0; i < 10; i++){
-                //draw(blackBagSelection);
+                draw(blackBagSelection);
             }
 
             while (!won){ //Repeats until the won condition has been met
                 if(getHandValue() == 100){ //Checks if hand value is 100
                     won = true;
                 } else {
-                    int discardIndex = rand.nextInt(hand.size()); //Gets the index of a random pebble to be discarded
+                    //int discardIndex = rand.nextInt(hand.size()); //Gets the index of a random pebble to be discarded
 
-                    discard(discardIndex);
-                    //draw(Bag (random bag))
+                    //discard(discardIndex);
+
+                    //int blackBagIndex = rand.nextInt(blackBags.length);
+
+                    //draw(blackBags[blackBagIndex]);
                 }
             }
         }
@@ -190,6 +193,37 @@ public class PebbleGame {
     }
 
 
+    /**
+     * Method containing an error message if the user enters an invalid number of players
+     */
+    private static void playerNumError(){
+        System.out.println("PebbleGame must be run with the 1st argument as a positive integer representing the number" +
+                " of players playing the game.");
+    }
+
+    /**
+     * Method containing an error message if the format of the CSV file is invalid
+     */
+    private static void csvFormatError(){
+        System.out.println("CSV file in an incorrect format, ensure the file consists of positive integers separated by commas.");
+    }
+
+    /**
+     * Method containing an error message if the CSV file can't be found with a given filepath
+     */
+    private static void csvNotFoundError(){
+        System.out.println("No such file exists.");
+    }
+
+    /**
+     * Method containing an error message if the number of pebbles in each bag is too small
+     * @param playerNum player number entered by the user
+     */
+    private static void pebbleNumError(int playerNum){
+        System.out.println("Number of pebbles in each bag must be at least 11 times that of the number of players" +
+                " which is: " + 11*playerNum);
+    }
+
     public static void main(String[] args) {
 
         System.out.println("Welcome to the Pebble Game!");
@@ -223,38 +257,6 @@ public class PebbleGame {
             (new Thread((new Player()))).start(); //Creates a new thread and a new player and starts it
         }
 
-    }
-
-
-    /**
-     * Method containing an error message if the user enters an invalid number of players
-     */
-    private static void playerNumError(){
-        System.out.println("PebbleGame must be run with the 1st argument as a positive integer representing the number" +
-                " of players playing the game.");
-    }
-
-    /**
-     * Method containing an error message if the format of the CSV file is invalid
-     */
-    private static void csvFormatError(){
-        System.out.println("CSV file in an incorrect format, ensure the file consists of positive integers separated by commas.");
-    }
-
-    /**
-     * Method containing an error message if the CSV file can't be found with a given filepath
-     */
-    private static void csvNotFoundError(){
-        System.out.println("No such file exists.");
-    }
-
-    /**
-     * Method containing an error message if the number of pebbles in each bag is too small
-     * @param playerNum player number entered by the user
-     */
-    private static void pebbleNumError(int playerNum){
-        System.out.println("Number of pebbles in each bag must be at least 11 times that of the number of players" +
-                " which is: " + 11*playerNum);
     }
 
 }
