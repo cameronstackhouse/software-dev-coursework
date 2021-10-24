@@ -63,10 +63,9 @@ public class PebbleGame {
                 blackBag.getPebbles().remove(randPebbleIndex);
                 hand.add(randomPebble);
                 writeDraw(randomPebble, blackBag);
-            }
-
-            if (blackBag.isEmpty()){
-                refill(blackBag);
+                if(blackBag.isEmpty()){
+                    refill(blackBag);
+                }
             }
         }
 
