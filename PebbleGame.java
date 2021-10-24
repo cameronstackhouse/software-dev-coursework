@@ -59,12 +59,12 @@ public class PebbleGame {
          *
          * @param blackBag
          */
-        public synchronized void draw(Bag blackBag){
+        public synchronized boolean draw(Bag blackBag){
             Random rand = new Random();
 
             if(blackBag.isEmpty()) {
                 refill(blackBag);
-                //DRAW NEW
+                return false;
             } else {
                 int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size());
                 Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex);
@@ -74,6 +74,7 @@ public class PebbleGame {
                 if(blackBag.isEmpty()){
                     refill(blackBag);
                 }
+                return true;
             }
         }
 
@@ -156,10 +157,14 @@ public class PebbleGame {
                     discard(randomPebbleIndex);
 
                     //Draws a pebble from a random black bag
-                    int randomPebbleBag = rand.nextInt(blackBags.length);
-                    Bag bagToDrawFrom = blackBags[randomPebbleBag];
-
-                    draw(bagToDrawFrom);
+                    boolean pebbleDrawn = false;
+                    while (!pebbleDrawn) {
+                        //generates a bag index from the number of bags available.
+                        int randomPebbleBag = rand.nextInt(blackBags.length);
+                        //selects bag at bag index.
+                        Bag bagToDrawFrom = blackBags[randomPebbleBag];
+                        pebbleDrawn = draw(bagToDrawFrom);
+                    }
                 }
             }
         }
