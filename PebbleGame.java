@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Random;
@@ -10,6 +12,8 @@ public class PebbleGame {
     static final int numberOfEachBag = 3; //Number of each bag (In this case 3)
     static volatile Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
     static volatile Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
+    static String[] blackBagNames = {"A", "B", "C"};
+    static String[] whiteBagNames = {"X", "Y", "Z"};
 
     /**
      * Class representing a player of the game
@@ -38,26 +42,31 @@ public class PebbleGame {
         }
 
 
-        public void discard(int index) {
+        public synchronized void discard(int index) {
             Pebble removedPebble = this.hand.get(index);
             this.hand.remove(index);
             int bagIndex = removedPebble.getBagIndex();
             whiteBags[bagIndex].getPebbles().add(removedPebble);
+            writeDiscard(removedPebble, whiteBags[bagIndex]);
         }
 
 
-        public void draw(Bag blackBag){
+        public synchronized void draw(Bag blackBag){
             Random rand = new Random();
-            synchronized (this) {
-                if(blackBag.isEmpty()) {
-                    refill(blackBag);
-                    //DRAW AGAIN FROM DIFFERENT RANDOM BAG
-                } else {
-                    int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size());
-                    Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex);
-                    blackBag.getPebbles().remove(randPebbleIndex);
-                    hand.add(randomPebble);
-                }
+
+            if(blackBag.isEmpty()) {
+                refill(blackBag);
+                //DRAW NEW
+            } else {
+                int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size());
+                Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex);
+                blackBag.getPebbles().remove(randPebbleIndex);
+                hand.add(randomPebble);
+                writeDraw(randomPebble, blackBag);
+            }
+
+            if (blackBag.isEmpty()){
+                refill(blackBag);
             }
         }
 
@@ -70,6 +79,38 @@ public class PebbleGame {
             Bag whiteBagAtIndex = whiteBags[bagIndex]; //Gets the white bag at the corresponding black bag index
             blackBag.setPebbles(whiteBagAtIndex.getPebbles()); //Sets the black bag pebbles to be the corresponding white bag pebbles
             whiteBagAtIndex.getPebbles().clear(); //Clears the white bags pebble array list
+        }
+
+        public void writeDraw(Pebble pebble, Bag bag){
+            try {
+                FileWriter writer = new FileWriter(this.name + "_output.txt", true);
+                writer.write(name + " has drawn a " + pebble.getWeight() + " from bag " + bag.getBagName() + "\n");
+                writer.write(name + " hand is " + handToString() + "\n");
+                writer.close();
+            } catch (IOException e){
+                System.out.println("Error, File not found");
+            }
+
+        }
+
+        public void writeDiscard(Pebble pebble, Bag bag){
+            try {
+                FileWriter writer = new FileWriter(this.name + "_output.txt", true);
+                writer.write(name + " has discarded a " + pebble.getWeight() + " to bag " + bag.getBagName() + "\n");
+                writer.write(name + " hand is " + handToString() + "\n");
+                writer.close();
+            } catch (IOException e){
+                System.out.println("Error, File not found");
+            }
+        }
+
+        public String handToString(){
+            StringBuilder output = new StringBuilder();
+            for(int i= 0; i < hand.size(); i++){
+                output.append(hand.get(i).getWeight()).append(", ");
+            }
+
+            return output.toString();
         }
 
         @Override
@@ -143,7 +184,7 @@ public class PebbleGame {
      * @param reader scanner to get user input passed in
      * @return Bag object containing pebbles
      */
-    public static Bag createBlackBag(int bagIndex, int numberOfPlayers, Scanner reader){
+    public static Bag createBlackBag(int bagIndex, int numberOfPlayers, Scanner reader, String name){
         Bag newBag;
         while (true){ //Repeats infinitely until break statement called
             try {
@@ -154,7 +195,7 @@ public class PebbleGame {
                     System.exit(0);
                 }
 
-                newBag = new Bag(readCSVToBag(fPath, bagIndex), bagIndex); //Creates a new bag by reading the CSV file specified
+                newBag = new Bag(readCSVToBag(fPath, bagIndex), bagIndex, name); //Creates a new bag by reading the CSV file specified
 
                 if(newBag.getPebbles().size() < 11*numberOfPlayers){ //Checks that the number of pebbles in the bag is valid
                     throw new IllegalArgumentException(); //If not then throw an exception
@@ -257,13 +298,13 @@ public class PebbleGame {
 
         //Calls the function createBag to get the users input and create a new bag from a given csv file
         for(int i = 0; i < numberOfEachBag; i++){ //Creates each black bag one at a time depending on how many bags needed (In this case 3)
-            Bag current = createBlackBag(i, numPlayers, reader); //Creates the black bag using the createBlackBag method
+            Bag current = createBlackBag(i, numPlayers, reader, blackBagNames[i]); //Creates the black bag using the createBlackBag method
             blackBags[i] = current; //Adds the black bag to the black bag array
         }
 
         //Fills the white bag array with empty bags
         for(int i = 0; i < numberOfEachBag; i++){
-            whiteBags[i] = new Bag(new ArrayList<Pebble>(), i);
+            whiteBags[i] = new Bag(new ArrayList<Pebble>(), i, whiteBagNames[i]);
         }
 
         reader.close(); //Closes the reader after all user data has been inputted

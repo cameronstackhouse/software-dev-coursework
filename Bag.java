@@ -3,10 +3,16 @@ import java.util.ArrayList;
 public class Bag {
     ArrayList<Pebble> pebbles;
     int bagIndex;
+    String bagName;
 
-    public Bag(ArrayList<Pebble> pebbles, int index){
+    public Bag(ArrayList<Pebble> pebbles, int index, String bagName){
         this.pebbles = pebbles;
         this.bagIndex = index;
+        this.bagName = bagName;
+    }
+
+    public String getBagName() {
+        return bagName;
     }
 
     public ArrayList<Pebble> getPebbles() {
