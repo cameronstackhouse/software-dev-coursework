@@ -12,8 +12,8 @@ public class PebbleGame {
     static final int numberOfEachBag = 3; //Number of each bag (In this case 3)
     static volatile Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
     static volatile Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
-    static String[] blackBagNames = {"A", "B", "C"};
-    static String[] whiteBagNames = {"X", "Y", "Z"};
+    static final String[] blackBagNames = {"A", "B", "C"};
+    static final String[] whiteBagNames = {"X", "Y", "Z"};
 
     /**
      * Class representing a player of the game
@@ -42,6 +42,10 @@ public class PebbleGame {
         }
 
 
+        /**
+         *
+         * @param index
+         */
         public synchronized void discard(int index) {
             Pebble removedPebble = this.hand.get(index);
             this.hand.remove(index);
@@ -51,6 +55,10 @@ public class PebbleGame {
         }
 
 
+        /**
+         *
+         * @param blackBag
+         */
         public synchronized void draw(Bag blackBag){
             Random rand = new Random();
 
@@ -80,6 +88,11 @@ public class PebbleGame {
             whiteBagAtIndex.getPebbles().clear(); //Clears the white bags pebble array list
         }
 
+        /**
+         *
+         * @param pebble
+         * @param bag
+         */
         public void writeDraw(Pebble pebble, Bag bag){
             try {
                 FileWriter writer = new FileWriter(this.name + "_output.txt", true);
@@ -92,6 +105,11 @@ public class PebbleGame {
 
         }
 
+        /**
+         *
+         * @param pebble
+         * @param bag
+         */
         public void writeDiscard(Pebble pebble, Bag bag){
             try {
                 FileWriter writer = new FileWriter(this.name + "_output.txt", true);
@@ -103,6 +121,10 @@ public class PebbleGame {
             }
         }
 
+        /**
+         *
+         * @return
+         */
         public String handToString(){
             StringBuilder output = new StringBuilder();
             for(int i= 0; i < hand.size(); i++){
