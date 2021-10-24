@@ -6,19 +6,21 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class PebbleGame {
-    static boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
+    static volatile boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
     static final int numberOfEachBag = 3; //Number of each bag (In this case 3)
-    static Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
-    static Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
+    static volatile Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
+    static volatile Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
 
     /**
      * Class representing a player of the game
      */
     static class Player implements Runnable{
         private ArrayList<Pebble> hand; //Represents users hand containing pebbles
+        private String name;
 
-        public Player(){
+        public Player(String name){
             this.hand = new ArrayList<>();
+            this.name = name;
         }
 
         /**
@@ -46,27 +48,17 @@ public class PebbleGame {
 
         public void draw(Bag blackBag){
             Random rand = new Random();
-            boolean empty;
-
-            if(blackBag.isEmpty()){
-                refill(blackBag);
-                empty = true;
-
-                while (empty){
-                    int randomBagIndex = rand.nextInt(numberOfEachBag);
-                    blackBag = blackBags[randomBagIndex];
-                    if(!blackBag.isEmpty()){
-                        empty = false;
-                    }
+            synchronized (this) {
+                if(blackBag.isEmpty()) {
+                    refill(blackBag);
+                    //DRAW AGAIN FROM DIFFERENT RANDOM BAG
+                } else {
+                    int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size());
+                    Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex);
+                    blackBag.getPebbles().remove(randPebbleIndex);
+                    hand.add(randomPebble);
                 }
-
             }
-
-            int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size());
-            Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex);
-            blackBag.getPebbles().remove(randPebbleIndex);
-            hand.add(randomPebble);
-
         }
 
         /**
@@ -77,7 +69,7 @@ public class PebbleGame {
             int bagIndex = blackBag.getBagIndex(); //Gets the index of the black bag in the array (to get the corresponding white bag)
             Bag whiteBagAtIndex = whiteBags[bagIndex]; //Gets the white bag at the corresponding black bag index
             blackBag.setPebbles(whiteBagAtIndex.getPebbles()); //Sets the black bag pebbles to be the corresponding white bag pebbles
-            whiteBagAtIndex.setPebbles(new ArrayList<>()); //Clears the white bags pebble array list
+            whiteBagAtIndex.getPebbles().clear(); //Clears the white bags pebble array list
         }
 
         @Override
@@ -86,13 +78,12 @@ public class PebbleGame {
             //initial hand code:
             Bag blackBagSelection = blackBags[rand.nextInt(numberOfEachBag)];
 
-            for (int i = 0; i < 10; i++) {
+            for(int i = 0; i < 10; i++){
                 draw(blackBagSelection);
             }
 
-
             while (!won){ //Repeats until the won condition has been met
-                //system.out.println(Thread.currentThread().getName() + ": " + getHandValue());
+                System.out.println(Thread.currentThread().getName() + ": " + getHandValue());
                 if(getHandValue() == 100){ //Checks if hand value is 100
                     won = true;
                     System.out.println(Thread.currentThread().getName() + " WON!");
@@ -278,9 +269,7 @@ public class PebbleGame {
         reader.close(); //Closes the reader after all user data has been inputted
 
         for(int i = 0; i < numPlayers; i++){ //Loops for the total number of players
-            (new Thread((new Player()))).start(); //Creates a new thread and a new player and starts it
+            (new Thread((new Player("player" + i)))).start(); //Creates a new thread and a new player and starts it
         }
-
     }
-
 }
