@@ -6,8 +6,9 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class PebbleGame {
-    static volatile boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
     static final int numberOfEachBag = 3; //Number of each bag (In this case 3)
+
+    static volatile boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
     static volatile Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
     static volatile Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
 
@@ -15,49 +16,27 @@ public class PebbleGame {
      * Class representing a player of the game
      */
     static class Player implements Runnable{
-        private ArrayList<Pebble> hand; //Represents users hand containing pebbles
+        private volatile ArrayList<Pebble> hand = new ArrayList<>(); //Represents users hand containing pebbles
         private String name;
 
         public Player(String name){
-            this.hand = new ArrayList<>();
             this.name = name;
         }
 
-        /**
-         * Method to get the weight value of the players hand
-         * @return the weight value of the players hand
-         */
         public int getHandValue(){
             int total = 0;
-
-            for(int i = 0; i < hand.size(); i++){ //Iterates through hand
-                total += hand.get(i).getWeight(); //Adds weight of current pebble to total
-            }
 
             return total;
         }
 
 
         public void discard(int index) {
-            Pebble removedPebble = this.hand.get(index);
-            this.hand.remove(index);
-            int bagIndex = removedPebble.getBagIndex();
-            whiteBags[bagIndex].getPebbles().add(removedPebble);
+
         }
 
 
         public void draw(Bag blackBag){
-            Random rand = new Random();
-            synchronized (this) {
-                if(blackBag.isEmpty()) {
-                    refill(blackBag); //DOES NOT WORK
-                } else {
-                    int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size());
-                    Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex);
-                    blackBag.getPebbles().remove(randPebbleIndex);
-                    hand.add(randomPebble);
-                }
-            }
+
         }
 
         /**
@@ -65,38 +44,20 @@ public class PebbleGame {
          * @param blackBag bag to be refilled
          */
         public void refill(Bag blackBag){
-            int bagIndex = blackBag.getBagIndex(); //Gets the index of the black bag in the array (to get the corresponding white bag)
-            Bag whiteBagAtIndex = whiteBags[bagIndex]; //Gets the white bag at the corresponding black bag index
-            blackBag.setPebbles(whiteBagAtIndex.getPebbles()); //Sets the black bag pebbles to be the corresponding white bag pebbles
-            whiteBagAtIndex.setPebbles(new ArrayList<>()); //Clears the white bags pebble array list
+
         }
 
         @Override
         public void run() {
             Random rand = new Random();
-            //initial hand code:
-            Bag blackBagSelection = blackBags[rand.nextInt(numberOfEachBag)];
-
-            for(int i = 0; i < 10; i++){
-                draw(blackBagSelection);
-            }
 
             while (!won){ //Repeats until the won condition has been met
-                System.out.println(Thread.currentThread().getName() + ": " + getHandValue());
-                if(getHandValue() == 100){ //Checks if hand value is 100
+                if(this.getHandValue() == 100){ //Checks if hand value is 100
                     won = true;
                     System.out.println(Thread.currentThread().getName() + " WON!");
                 } else {
-                    //Discards a random pebble from the players hand into corresponding white bag from the black bag in which the pebble was drawn from
-                    int randomPebbleIndex = rand.nextInt(hand.size());
+                    //Discard random pebble and get pebble from random bag
 
-                    discard(randomPebbleIndex);
-
-                    //Draws a pebble from a random black bag
-                    int randomPebbleBag = rand.nextInt(blackBags.length);
-                    Bag bagToDrawFrom = blackBags[randomPebbleBag];
-
-                    draw(bagToDrawFrom);
                 }
             }
         }
