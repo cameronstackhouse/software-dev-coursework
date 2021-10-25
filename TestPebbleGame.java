@@ -1,6 +1,5 @@
 import org.junit.Test;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -45,7 +44,7 @@ public class TestPebbleGame {
             String userInput = "Invalid";
             Scanner scanner = new Scanner(userInput);
 
-            int players = PebbleGame.getNumPlayers(scanner);
+            PebbleGame.getNumPlayers(scanner);
             fail();
         } catch (NoSuchElementException e){}
         //Passes if this is called. No Such element exception is thrown if the program asks for another user input
@@ -57,7 +56,7 @@ public class TestPebbleGame {
         String userInput = "E";
         Scanner scanner = new Scanner(userInput);
 
-        int players = PebbleGame.getNumPlayers(scanner);
+        PebbleGame.getNumPlayers(scanner);
         fail();
     }
 
@@ -92,8 +91,61 @@ public class TestPebbleGame {
 
         try {
             String fileName = "doesNotExist.csv";
-            ArrayList<Pebble> actualPebbles = PebbleGame.readCSVToPebbles(fileName, mockBagIndex);
+            PebbleGame.readCSVToPebbles(fileName, mockBagIndex);
             fail();
         } catch (FileNotFoundException e){}
+    }
+
+    @Test
+    public void testReadCSVToPebbleInvalidFormat(){
+        int mockBagIndex = 0;
+
+        try {
+            String filename = "invalidFormat.csv";
+            PebbleGame.readCSVToPebbles(filename, mockBagIndex);
+            fail();
+        } catch (FileNotFoundException | NumberFormatException e){}
+    }
+
+    @Test
+    public void testReadCSVToPebbleInvalidFileFormat(){
+        int mockBagIndex = 0;
+
+        try {
+            String filename = "invalid.txt";
+            PebbleGame.readCSVToPebbles(filename, mockBagIndex);
+            fail();
+        } catch (FileNotFoundException | NumberFormatException e){}
+    }
+
+    @Test
+    public void testReadCSVToPebbleAllNegativeNum(){
+        int mockBagIndex = 0;
+
+        try {
+            String filename = "negative.csv";
+            PebbleGame.readCSVToPebbles(filename, mockBagIndex);
+            fail();
+        } catch (FileNotFoundException | NumberFormatException e){}
+    }
+
+    @Test
+    public void testReadCSVToPebbleOneNegativeNum(){
+        int mockBagIndex = 0;
+
+        try {
+            String filename = "oneNegative.csv";
+            PebbleGame.readCSVToPebbles(filename, mockBagIndex);
+            fail();
+        } catch (FileNotFoundException | NumberFormatException e){}
+    }
+
+    @Test
+    public void testCreateBlackBagValid(){
+        int mockBagIndex = 0;
+        int mockNumberOfPlayers = 3;
+        String mockName = "A";
+
+
     }
 }
