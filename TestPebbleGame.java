@@ -193,6 +193,69 @@ public class TestPebbleGame {
         Bag expectedBlackBag = new Bag(expectedPebbles, mockBagIndex, mockName);
 
         Bag actualBlackBag = PebbleGame.createBlackBag(mockBagIndex, mockNumberOfPlayers, scanner, mockName);
-        
+
+        assertEquals(expectedBlackBag.getBagIndex(), actualBlackBag.getBagIndex());
+        assertEquals(expectedBlackBag.getBagName(), actualBlackBag.getBagName());
+
+        for(int i = 0; i < actualBlackBag.getPebbles().size(); i++){
+            assertEquals(expectedBlackBag.getPebbles().get(i).getBagIndex(), actualBlackBag.getPebbles().get(i).getBagIndex());
+            assertEquals(expectedBlackBag.getPebbles().get(i).getWeight(), actualBlackBag.getPebbles().get(i).getWeight());
+        }
+    }
+
+    @Test
+    public void testCreateBagInvalidNumPebbles(){
+        int mockBagIndex = 0;
+        int mockNumberOfPlayers = 2;
+        String mockName = "A";
+        String userInput = "tooFewPebbles.csv";
+        Scanner scanner = new Scanner(userInput);
+
+        try {
+            Bag actualBlackBag = PebbleGame.createBlackBag(mockBagIndex, mockNumberOfPlayers, scanner, mockName);
+            fail();
+        } catch (NoSuchElementException e){}
+    }
+
+    @Test
+    public void testCreateBagInvalidFileFormat(){
+        int mockBagIndex = 0;
+        int mockNumberOfPlayers = 2;
+        String mockName = "A";
+        String userInput = "invalidFormat.csv";
+        Scanner scanner = new Scanner(userInput);
+
+        try {
+            PebbleGame.createBlackBag(mockBagIndex, mockNumberOfPlayers, scanner, mockName);
+            fail();
+        } catch (NoSuchElementException e){}
+    }
+
+    @Test
+    public void testCreateBagInvalidFile(){
+        int mockBagIndex = 0;
+        int mockNumberOfPlayers = 2;
+        String mockName = "A";
+        String userInput = "doesNotExist.csv";
+        Scanner scanner = new Scanner(userInput);
+
+        try {
+            PebbleGame.createBlackBag(mockBagIndex, mockNumberOfPlayers, scanner, mockName);
+            fail();
+        } catch (NoSuchElementException e){}
+    }
+
+    @Test
+    public void testCreateBagExitCommand(){
+        int mockBagIndex = 0;
+        int mockNumberOfPlayers = 2;
+        String mockName = "A";
+        String userInput = "E";
+        Scanner scanner = new Scanner(userInput);
+
+        try {
+            Bag actualBlackBag = PebbleGame.createBlackBag(mockBagIndex, mockNumberOfPlayers, scanner, mockName);
+            fail();
+        } catch (NoSuchElementException e){}
     }
 }

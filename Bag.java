@@ -27,6 +27,10 @@ public class Bag {
         this.bagIndex = bagIndex;
     }
 
+    public void setBagName(String bagName) {
+        this.bagName = bagName;
+    }
+
     public boolean isEmpty(){
         return pebbles.isEmpty();
     }
