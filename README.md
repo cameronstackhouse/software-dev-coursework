@@ -24,7 +24,7 @@ The pebble weights are taken from a .csv file. There are 3 bags of pebbles.
 ## Prerequisites
 
 Java needs to be installed on your device. The program was written using the IDE
-IntelliJ (version 2021.2.3, build 212.5457.46) and JDK verison 17.
+IntelliJ (version 2021.2.3, build 212.5457.46) and JDK version 17.
 
 You will need pebble weight values in a .csv file. The program comes with an
 example file 'example_file_1.csv' to show the format of the file. Feel free to
@@ -38,8 +38,8 @@ before your very eyes!
 
 ## Testing
 
-To run and test the code, use the supplied test suite (ENTER NAME HERE). This runs 
-unit testing using JUnit4. 
+To run and test the code, use the supplied test suite (ENTER NAME HERE). 
+This runs unit testing using JUnit4. 
 
 ## License
 
