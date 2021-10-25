@@ -55,10 +55,6 @@ public class PebbleGame {
         }
 
 
-        /**
-         *
-         * @param blackBag
-         */
         public synchronized boolean draw(Bag blackBag){
             Random rand = new Random();
 
@@ -179,7 +175,7 @@ public class PebbleGame {
      * @throws NumberFormatException handles if the file is not in the correct format, e.g not comma separated integers
      * @throws FileNotFoundException handles if the given file name can not be found
      */
-    public static ArrayList<Pebble> readCSVToBag(String filename, int bagIndex) throws NumberFormatException, FileNotFoundException {
+    public static ArrayList<Pebble> readCSVToPebbles(String filename, int bagIndex) throws NumberFormatException, FileNotFoundException {
         ArrayList<Pebble> pebbles = new ArrayList<>(); //Creates a new array list pebbles to store the pebbles
 
         Scanner scanner = new Scanner(new File(filename));
@@ -221,7 +217,7 @@ public class PebbleGame {
                     System.exit(0);
                 }
 
-                newBag = new Bag(readCSVToBag(fPath, bagIndex), bagIndex, name); //Creates a new bag by reading the CSV file specified
+                newBag = new Bag(readCSVToPebbles(fPath, bagIndex), bagIndex, name); //Creates a new bag by reading the CSV file specified
 
                 if(newBag.getPebbles().size() < 11*numberOfPlayers){ //Checks that the number of pebbles in the bag is valid
                     throw new IllegalArgumentException(); //If not then throw an exception
@@ -330,7 +326,7 @@ public class PebbleGame {
 
         //Fills the white bag array with empty bags
         for(int i = 0; i < numberOfEachBag; i++){
-            whiteBags[i] = new Bag(new ArrayList<Pebble>(), i, whiteBagNames[i]);
+            whiteBags[i] = new Bag(new ArrayList<>(), i, whiteBagNames[i]);
         }
 
         reader.close(); //Closes the reader after all user data has been inputted
