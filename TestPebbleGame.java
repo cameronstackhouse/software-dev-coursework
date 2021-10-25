@@ -29,13 +29,51 @@ public class TestPebbleGame {
             String userInput = "-1";
             Scanner scanner = new Scanner(userInput);
 
-            int players = PebbleGame.getNumPlayers(scanner);
+            PebbleGame.getNumPlayers(scanner);
             fail();
 
         } catch (NoSuchElementException e){
             //Passes if this is called. No Such element exception is thrown if the program asks for another user input
             //as the first input provided is invalid.
         }
+    }
+
+    @Test
+    public void testGetNumPlayersExtreme(){
+        try {
+            String userInput = "2147483647";
+            Scanner scanner = new Scanner(userInput);
+
+            int players = PebbleGame.getNumPlayers(scanner);
+            assertEquals(2147483647, players);
+
+        } catch (NoSuchElementException e){
+            fail();
+        }
+    }
+
+    @Test
+    public void getNumPlayersZero(){
+        try {
+            String userInput = "0";
+            Scanner scanner = new Scanner(userInput);
+
+            PebbleGame.getNumPlayers(scanner);
+            fail();
+
+        } catch (NoSuchElementException e){}
+    }
+
+    @Test
+    public void getNumPlayersOutOfBounds(){
+        try {
+            String userInput = "2147483648";
+            Scanner scanner = new Scanner(userInput);
+
+            PebbleGame.getNumPlayers(scanner);
+            fail();
+
+        } catch (NoSuchElementException e){}
     }
 
     @Test
@@ -65,17 +103,15 @@ public class TestPebbleGame {
         int mockBagIndex = 0;
 
         ArrayList<Pebble> expectedPebbles = new ArrayList<>();
-        expectedPebbles.add(new Pebble(1, 0));
-        expectedPebbles.add(new Pebble(1, 0));
-        expectedPebbles.add(new Pebble(1, 0));
-        expectedPebbles.add(new Pebble(1, 0));
-        expectedPebbles.add(new Pebble(1, 0));
+        for(int i = 0; i < 22; i++) {
+            expectedPebbles.add(new Pebble(1, 0));
+        }
 
 
         try {
             String fileName = "testValid.csv";
             ArrayList<Pebble> actualPebbles = PebbleGame.readCSVToPebbles(fileName, mockBagIndex);
-            for(int i = 0; i < 5; i++){
+            for(int i = 0; i < actualPebbles.size(); i++){
                 assertEquals(expectedPebbles.get(i).getWeight(), actualPebbles.get(i).getWeight());
                 assertEquals(expectedPebbles.get(i).getBagIndex(), actualPebbles.get(i).getBagIndex());
             }
@@ -143,9 +179,20 @@ public class TestPebbleGame {
     @Test
     public void testCreateBlackBagValid(){
         int mockBagIndex = 0;
-        int mockNumberOfPlayers = 3;
+        int mockNumberOfPlayers = 2;
         String mockName = "A";
+        String userInput = "testValid.csv";
+        Scanner scanner = new Scanner(userInput);
 
+
+        ArrayList<Pebble> expectedPebbles = new ArrayList<>();
+        for(int i = 0; i < 22; i++) {
+            expectedPebbles.add(new Pebble(1, mockBagIndex));
+        }
+
+        Bag expectedBlackBag = new Bag(expectedPebbles, mockBagIndex, mockName);
+
+        Bag actualBlackBag = PebbleGame.createBlackBag(mockBagIndex, mockNumberOfPlayers, scanner, mockName);
 
     }
 }
