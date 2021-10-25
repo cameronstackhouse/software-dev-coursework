@@ -50,7 +50,7 @@ public class PebbleGame {
             }
         }
 
-        public synchronized boolean draw(Bag blackBag){
+        public boolean draw(Bag blackBag){
             Random rand = new Random();
             synchronized (lock){
                 if (blackBag.isEmpty()) {
@@ -120,7 +120,6 @@ public class PebbleGame {
             }
 
             while (!won){ //Repeats until the won condition has been met
-                System.out.println(Thread.currentThread().getName() + ": " + getHandValue());
                 if(getHandValue() == 100){ //Checks if hand value is 100
                     won = true;
                     System.out.println(Thread.currentThread().getName() + " WON!");
@@ -128,7 +127,6 @@ public class PebbleGame {
                     //Discards a random pebble from the players hand into corresponding white bag from the black bag in which the pebble was drawn from
 
                     int randomPebbleIndex = rand.nextInt(hand.size());
-
                     discard(randomPebbleIndex);
 
                     //Draws a pebble from a random black bag
