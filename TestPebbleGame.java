@@ -193,6 +193,6 @@ public class TestPebbleGame {
         Bag expectedBlackBag = new Bag(expectedPebbles, mockBagIndex, mockName);
 
         Bag actualBlackBag = PebbleGame.createBlackBag(mockBagIndex, mockNumberOfPlayers, scanner, mockName);
-
+        
     }
 }
