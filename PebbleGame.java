@@ -14,6 +14,7 @@ public class PebbleGame {
     static Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
     static final String[] blackBagNames = {"A", "B", "C"};
     static final String[] whiteBagNames = {"X", "Y", "Z"};
+    private static final Object lock = new Object();
 
     /**
      * Class representing a player of the game
@@ -42,30 +43,31 @@ public class PebbleGame {
             this.hand.remove(index);
             int bagIndex = removedPebble.getBagIndex();
 
-            synchronized (whiteBags[bagIndex]) {
+            synchronized (lock) {
                 Bag whiteBag = whiteBags[bagIndex];
                 whiteBag.getPebbles().add(removedPebble);
                 writeDiscard(removedPebble, whiteBags[bagIndex]);
             }
-
         }
 
-        public boolean draw(Bag blackBag){
+        public synchronized boolean draw(Bag blackBag){
             Random rand = new Random();
-            if (blackBag.isEmpty()) {
-                refill(blackBag);
-                return false;
-            } else {
-                int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size());
-                Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex);
-                blackBag.getPebbles().remove(randPebbleIndex);
-                hand.add(randomPebble);
-                writeDraw(randomPebble, blackBag);
+            synchronized (lock){
                 if (blackBag.isEmpty()) {
                     refill(blackBag);
+                    return false;
+                } else {
+                    int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size());
+                    Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex);
+                    blackBag.getPebbles().remove(randPebbleIndex);
+                    hand.add(randomPebble);
+                    writeDraw(randomPebble, blackBag);
+                    if (blackBag.isEmpty()) {
+                        refill(blackBag);
+                    }
                 }
-                return true;
             }
+            return true;
         }
 
         public void refill(Bag blackBag){
