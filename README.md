@@ -1,4 +1,4 @@
-# software-development-courseworkT
+# software-development-coursework
 
 ## Introduction
 
