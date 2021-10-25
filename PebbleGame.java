@@ -10,8 +10,8 @@ import java.util.Scanner;
 public class PebbleGame {
     static volatile boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
     static final int numberOfEachBag = 3; //Number of each bag (In this case 3)
-    static volatile Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
-    static volatile Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
+    static Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
+    static Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
     static final String[] blackBagNames = {"A", "B", "C"};
     static final String[] whiteBagNames = {"X", "Y", "Z"};
 
@@ -27,10 +27,6 @@ public class PebbleGame {
             this.name = name;
         }
 
-        /**
-         * Method to get the weight value of the players hand
-         * @return the weight value of the players hand
-         */
         public int getHandValue(){
             int total = 0;
 
@@ -41,24 +37,22 @@ public class PebbleGame {
             return total;
         }
 
-
-        /**
-         *
-         * @param index
-         */
-        public synchronized void discard(int index) {
+        public void discard(int index) {
             Pebble removedPebble = this.hand.get(index);
             this.hand.remove(index);
             int bagIndex = removedPebble.getBagIndex();
-            whiteBags[bagIndex].getPebbles().add(removedPebble);
-            writeDiscard(removedPebble, whiteBags[bagIndex]);
+
+            synchronized (whiteBags[bagIndex]) {
+                Bag whiteBag = whiteBags[bagIndex];
+                whiteBag.getPebbles().add(removedPebble);
+                writeDiscard(removedPebble, whiteBags[bagIndex]);
+            }
+
         }
 
-
-        public synchronized boolean draw(Bag blackBag){
+        public boolean draw(Bag blackBag){
             Random rand = new Random();
-
-            if(blackBag.isEmpty()) {
+            if (blackBag.isEmpty()) {
                 refill(blackBag);
                 return false;
             } else {
@@ -67,17 +61,13 @@ public class PebbleGame {
                 blackBag.getPebbles().remove(randPebbleIndex);
                 hand.add(randomPebble);
                 writeDraw(randomPebble, blackBag);
-                if(blackBag.isEmpty()){
+                if (blackBag.isEmpty()) {
                     refill(blackBag);
                 }
                 return true;
             }
         }
 
-        /**
-         * Method to refill a black bag using its corresponding
-         * @param blackBag bag to be refilled
-         */
         public void refill(Bag blackBag){
             int bagIndex = blackBag.getBagIndex(); //Gets the index of the black bag in the array (to get the corresponding white bag)
             Bag whiteBagAtIndex = whiteBags[bagIndex]; //Gets the white bag at the corresponding black bag index
@@ -85,11 +75,6 @@ public class PebbleGame {
             whiteBagAtIndex.getPebbles().clear(); //Clears the white bags pebble array list
         }
 
-        /**
-         *
-         * @param pebble
-         * @param bag
-         */
         public void writeDraw(Pebble pebble, Bag bag){
             try {
                 FileWriter writer = new FileWriter(this.name + "_output.txt", true);
@@ -102,11 +87,6 @@ public class PebbleGame {
 
         }
 
-        /**
-         *
-         * @param pebble
-         * @param bag
-         */
         public void writeDiscard(Pebble pebble, Bag bag){
             try {
                 FileWriter writer = new FileWriter(this.name + "_output.txt", true);
@@ -118,10 +98,6 @@ public class PebbleGame {
             }
         }
 
-        /**
-         *
-         * @return
-         */
         public String handToString(){
             StringBuilder output = new StringBuilder();
             for(int i= 0; i < hand.size(); i++){
@@ -148,6 +124,7 @@ public class PebbleGame {
                     System.out.println(Thread.currentThread().getName() + " WON!");
                 } else {
                     //Discards a random pebble from the players hand into corresponding white bag from the black bag in which the pebble was drawn from
+
                     int randomPebbleIndex = rand.nextInt(hand.size());
 
                     discard(randomPebbleIndex);
@@ -336,3 +313,4 @@ public class PebbleGame {
         }
     }
 }
+

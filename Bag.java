@@ -15,7 +15,7 @@ public class Bag {
         return bagName;
     }
 
-    public ArrayList<Pebble> getPebbles() {
+    public synchronized ArrayList<Pebble> getPebbles() {
         return pebbles;
     }
 
@@ -39,3 +39,4 @@ public class Bag {
         this.pebbles = pebbles;
     }
 }
+
