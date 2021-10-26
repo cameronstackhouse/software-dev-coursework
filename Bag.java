@@ -4,9 +4,9 @@ import java.util.ArrayList;
  * Class representing a Bag
  */
 public class Bag {
-    ArrayList<Pebble> pebbles;
-    int bagIndex;
-    String bagName;
+    ArrayList<Pebble> pebbles; //Represents pebbles in the bag
+    int bagIndex; //Index of the back in the bag array (Either WhiteBags or BlackBags array. Each index is its corresponding bag)
+    String bagName; //Name of the bag
 
     /**
      * Constructor for a Bag object

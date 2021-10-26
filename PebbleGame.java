@@ -8,12 +8,15 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class PebbleGame {
-    private static final Object lock = new Object();
+    private static final Object lock = new Object(); //Lock to be synchronized on
     static final int numberOfEachBag = 3; //Number of each bag (In this case 3)
-    static final String[] blackBagNames = {"A", "B", "C"};
-    static final String[] whiteBagNames = {"X", "Y", "Z"};
-    static Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
-    static Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
+    static final String[] blackBagNames = {"A", "B", "C"}; //Names of black bags
+    static final String[] whiteBagNames = {"X", "Y", "Z"}; //Names of white bags
+
+    //Arrays containing black and white bags. Black bag at [0] has corresponding white bag at whiteBags [0].
+    static Bag[] blackBags = new Bag[numberOfEachBag];
+    static Bag[] whiteBags = new Bag[numberOfEachBag];
+
     static volatile boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
 
     /**
@@ -22,7 +25,7 @@ public class PebbleGame {
      */
     static class Player implements Runnable{
         private ArrayList<Pebble> hand; //Represents users hand containing pebbles
-        private String name;
+        private String name; //Name of the player playing the game
 
         /**
          * Constructor for creating a player object
@@ -33,18 +36,34 @@ public class PebbleGame {
             this.name = name;
         }
 
+        /**
+         * Method to get the name of the player
+         * @return name of the player
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * Method to get the hand of the player
+         * @return hand of the player
+         */
         public ArrayList<Pebble> getHand() {
             return hand;
         }
 
+        /**
+         * Method to set the hand of the player
+         * @param hand hand of the player
+         */
         public void setHand(ArrayList<Pebble> hand) {
             this.hand = hand;
         }
 
+        /**
+         * Method to set the name of the player
+         * @param name name of the player
+         */
         public void setName(String name) {
             this.name = name;
         }
@@ -60,7 +79,7 @@ public class PebbleGame {
                 total += hand.get(i).getWeight(); //Adds weight of current pebble to total
             }
 
-            return total;
+            return total; //Returns the total weight value
         }
 
         /**
@@ -68,14 +87,16 @@ public class PebbleGame {
          * @param index index of the pebble in the hand to be discarded
          */
         public void discard(int index) {
-            Pebble removedPebble = this.hand.get(index);
-            this.hand.remove(index);
-            int bagIndex = removedPebble.getBagIndex();
+            Pebble removedPebble = this.hand.get(index); //Gets the pebble object from the hand from the index entered
+            this.hand.remove(index); //Removes the pebble from the hand
+            int bagIndex = removedPebble.getBagIndex(); //Gets the array index of the bag which the pebble was drawn from
 
             synchronized (lock) {
-                Bag whiteBag = whiteBags[bagIndex];
-                whiteBag.getPebbles().add(removedPebble);
-                writeDiscard(removedPebble, whiteBags[bagIndex]);
+                //Synchronised on lock to ensure data consistencies don't occur when modifying white bag contents
+                //that is shared between multiple threads.
+                Bag whiteBag = whiteBags[bagIndex]; //Gets the corresponding discard bag from the whiteBags array
+                whiteBag.getPebbles().add(removedPebble); //Adds the pebble to the white bag
+                writeDiscard(removedPebble, whiteBags[bagIndex]); //Writes the discard to a text file
             }
         }
 
@@ -87,21 +108,20 @@ public class PebbleGame {
         public boolean draw(Bag blackBag){
             Random rand = new Random();
             synchronized (lock){
-                if (blackBag.isEmpty()) {
-                    refill(blackBag);
-                    return false;
+                //Synchronises on lock to ensure data inconsistencies do not occur when taking a pebble from a black
+                //bag or refilling the black bag and modifying the corresponding white bag contents
+                if (blackBag.isEmpty()) { //Checks if the bag is empty
+                    refill(blackBag); //If so then call the refill method on the black bag
+                    return false; //Returns false as a pebble has not been drawn
                 } else {
-                    int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size());
-                    Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex);
-                    blackBag.getPebbles().remove(randPebbleIndex);
-                    hand.add(randomPebble);
-                    writeDraw(randomPebble, blackBag);
-                    if (blackBag.isEmpty()) {
-                        refill(blackBag);
-                    }
+                    int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size()); //Gets a random integer from 0 to the number of pebbles in selected black bag
+                    Pebble randomPebble = blackBag.getPebbles().get(randPebbleIndex); //Gets the pebble from the bag
+                    blackBag.getPebbles().remove(randPebbleIndex); //Removes the randomly selected pebble from the bag
+                    hand.add(randomPebble); //Adds the random pebble to the players hand
+                    writeDraw(randomPebble, blackBag); //Writes the draw to the users output text file
                 }
             }
-            return true;
+            return true; //Returns true as a pebble has been drawn
         }
 
         /**
@@ -111,8 +131,10 @@ public class PebbleGame {
         public void refill(Bag blackBag){
             int bagIndex = blackBag.getBagIndex(); //Gets the index of the black bag in the array (to get the corresponding white bag)
             Bag whiteBagAtIndex = whiteBags[bagIndex]; //Gets the white bag at the corresponding black bag index
-            //blackBag.setPebbles(whiteBagAtIndex.getPebbles()); //Sets the black bag pebbles to be the corresponding white bag pebbles
+
+            //Code to add the white bag pebbles into the black bag
             for(int i = 0; i < whiteBagAtIndex.getPebbles().size(); i++){
+                //Iterates over the white pebbles bag and adds each pebble to the black bag which is being refilled
                 blackBag.getPebbles().add(whiteBagAtIndex.getPebbles().get(i));
             }
 
@@ -126,11 +148,15 @@ public class PebbleGame {
          */
         public void writeDraw(Pebble pebble, Bag bag){
             try {
+                //Creates a new FileWriter to the filename of the player name. Append set to true
                 FileWriter writer = new FileWriter(this.name + "_output.txt", true);
+                //Writes that the user has drawn a pebble from a bag
                 writer.write(name + " has drawn a " + pebble.getWeight() + " from bag " + bag.getBagName() + "\n");
-                writer.write(name + " hand is " + handToString() + "\n");
+                writer.write(name + " hand is " + handToString() + "\n"); //Writes users new hand
                 writer.close();
             } catch (IOException e){
+                //If file is not found then throws an error, this should never occur as file name is the player name
+                //Which is set by the program.
                 System.out.println("Error, File not found");
             }
 
@@ -143,11 +169,15 @@ public class PebbleGame {
          */
         public void writeDiscard(Pebble pebble, Bag bag){
             try {
+                //Creates a new FileWriter to the filename of the player name. Append set to true
                 FileWriter writer = new FileWriter(this.name + "_output.txt", true);
+                //Writes that the user has discarded a pebble to a bag
                 writer.write(name + " has discarded a " + pebble.getWeight() + " to bag " + bag.getBagName() + "\n");
-                writer.write(name + " hand is " + handToString() + "\n");
+                writer.write(name + " hand is " + handToString() + "\n"); //Writes users new hand
                 writer.close();
             } catch (IOException e){
+                //If file is not found then throws an error, this should never occur as file name is the player name
+                //Which is set by the program.
                 System.out.println("Error, File not found");
             }
         }
@@ -158,10 +188,13 @@ public class PebbleGame {
          */
         public String handToString(){
             StringBuilder output = new StringBuilder();
+
+            //Iterates over the players hand up to the last pebble
             for(int i= 0; i < hand.size() - 1; i++){
-                output.append(hand.get(i).getWeight()).append(", ");
+                output.append(hand.get(i).getWeight()).append(", "); //Adds indexed pebble weight to the StringBuilder
             }
 
+            //Adds the last value in the players hand to the StringBuilder but with a full stop
             output.append(hand.get(hand.size() - 1).getWeight()).append(".");
 
             return output.toString();
@@ -171,31 +204,31 @@ public class PebbleGame {
         public void run() {
             Random rand = new Random();
             //initial hand code:
-            Bag blackBagSelection = blackBags[rand.nextInt(numberOfEachBag)];
 
+            Bag blackBagSelection = blackBags[rand.nextInt(numberOfEachBag)]; //Selects a random black bag
+
+            //Draws 10 pebbles into the users hand from selected black bag
             for(int i = 0; i < 10; i++){
                 draw(blackBagSelection);
             }
 
-            while (!won){ //Repeats until the won condition has been met
-                System.out.println(Thread.currentThread().getName() + " " + getHandValue());
+            while (!won){ //Repeats until a thread has won
                 if(getHandValue() == 100){ //Checks if hand value is 100
-                    won = true;
+                    won = true; //If so then set won to true
                     System.out.println(Thread.currentThread().getName() + " WON!");
                 } else {
-
                     //Discards a random pebble from the players hand into corresponding white bag from the black bag in which the pebble was drawn from
                     int randomPebbleIndex = rand.nextInt(hand.size());
                     discard(randomPebbleIndex);
 
                     //Draws a pebble from a random black bag
                     boolean pebbleDrawn = false;
-                    while (!pebbleDrawn) {
-                        //generates a bag index from the number of bags available.
-                        int randomPebbleBag = rand.nextInt(blackBags.length);
-                        //selects bag at bag index.
+                    while (!pebbleDrawn) { //While the user has not drawn a pebble from a bag
+                        //generates a bag index from the number of bags available
+                        int randomPebbleBag = rand.nextInt(numberOfEachBag);
+                        //selects bag at bag index
                         Bag bagToDrawFrom = blackBags[randomPebbleBag];
-                        pebbleDrawn = draw(bagToDrawFrom);
+                        pebbleDrawn = draw(bagToDrawFrom); //Returns if user has drawn a pebble or not and
                     }
                 }
             }
@@ -362,7 +395,7 @@ public class PebbleGame {
 
         //Fills the white bag array with empty bags
         for(int i = 0; i < numberOfEachBag; i++){
-            whiteBags[i] = new Bag(new ArrayList<>(), i, whiteBagNames[i]);
+            whiteBags[i] = new Bag(new ArrayList<>(), i, whiteBagNames[i]); //Creates a new empty bag
         }
 
         reader.close(); //Closes the reader after all user data has been inputted

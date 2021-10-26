@@ -2,8 +2,8 @@
  * Class representing a Pebble
  */
 public class Pebble {
-    private int weight;
-    private int bagIndex;
+    private int weight; //Weight of the pebble
+    private int bagIndex; //Index of the bag in the blackBag array that the pebble has been taken from
 
     /**
      * Constructor for Pebble object
