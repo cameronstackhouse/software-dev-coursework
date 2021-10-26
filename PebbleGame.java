@@ -18,16 +18,25 @@ public class PebbleGame {
 
     /**
      * Class representing a player of the game
+     * Implements runnable as each player is a thread running concurrently playing the game
      */
     static class Player implements Runnable{
         private ArrayList<Pebble> hand; //Represents users hand containing pebbles
         private String name;
 
+        /**
+         * Constructor for creating a player object
+         * @param name name of the player
+         */
         public Player(String name){
             this.hand = new ArrayList<>();
             this.name = name;
         }
 
+        /**
+         * Method to get the total weight value of the pebbles in the users hand
+         * @return total weight value of hand
+         */
         public int getHandValue(){
             int total = 0;
 
@@ -38,6 +47,10 @@ public class PebbleGame {
             return total;
         }
 
+        /**
+         * Method to discard a pebble at a given index in the users hand to its corresponding bag that it was drawn from
+         * @param index index of the pebble in the hand to be discarded
+         */
         public void discard(int index) {
             Pebble removedPebble = this.hand.get(index);
             this.hand.remove(index);
@@ -50,6 +63,11 @@ public class PebbleGame {
             }
         }
 
+        /**
+         * Method to draw a pebble from a given black bag into the users hand
+         * @param blackBag bag to draw the pebble from
+         * @return boolean value stating if a pebble has successfully been drawn from the bag
+         */
         public boolean draw(Bag blackBag){
             Random rand = new Random();
             synchronized (lock){
@@ -70,6 +88,10 @@ public class PebbleGame {
             return true;
         }
 
+        /**
+         * Method to refill a black bag with its corresponding white bag (e.g black bag A is refilled with white bag X)
+         * @param blackBag black bag that is being refilled
+         */
         public void refill(Bag blackBag){
             int bagIndex = blackBag.getBagIndex(); //Gets the index of the black bag in the array (to get the corresponding white bag)
             Bag whiteBagAtIndex = whiteBags[bagIndex]; //Gets the white bag at the corresponding black bag index
@@ -77,6 +99,11 @@ public class PebbleGame {
             whiteBagAtIndex.getPebbles().clear(); //Clears the white bags pebble array list
         }
 
+        /**
+         * Method to write a draw to the users corresponding text file
+         * @param pebble pebble that the user has drawn
+         * @param bag bag that the user has drawn the pebble from
+         */
         public void writeDraw(Pebble pebble, Bag bag){
             try {
                 FileWriter writer = new FileWriter(this.name + "_output.txt", true);
@@ -89,6 +116,11 @@ public class PebbleGame {
 
         }
 
+        /**
+         * Method to write a discard to the users corresponding text file
+         * @param pebble pebble that the user is discarding
+         * @param bag bag that the user is discarding the pebble into
+         */
         public void writeDiscard(Pebble pebble, Bag bag){
             try {
                 FileWriter writer = new FileWriter(this.name + "_output.txt", true);
@@ -100,11 +132,17 @@ public class PebbleGame {
             }
         }
 
+        /**
+         * Method to convert the users hand of pebble weights into a string output
+         * @return users hand in a string format
+         */
         public String handToString(){
             StringBuilder output = new StringBuilder();
-            for(int i= 0; i < hand.size(); i++){
+            for(int i= 0; i < hand.size() - 1; i++){
                 output.append(hand.get(i).getWeight()).append(", ");
             }
+
+            output.append(hand.get(hand.size() - 1).getWeight()).append(".");
 
             return output.toString();
         }
@@ -120,6 +158,7 @@ public class PebbleGame {
             }
 
             while (!won){ //Repeats until the won condition has been met
+                System.out.println(Thread.currentThread().getName() + " " + getHandValue());
                 if(getHandValue() == 100){ //Checks if hand value is 100
                     won = true;
                     System.out.println(Thread.currentThread().getName() + " WON!");
