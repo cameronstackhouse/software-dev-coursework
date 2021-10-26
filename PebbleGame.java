@@ -8,13 +8,13 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class PebbleGame {
-    static volatile boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
+    private static final Object lock = new Object();
     static final int numberOfEachBag = 3; //Number of each bag (In this case 3)
-    static Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
-    static Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
     static final String[] blackBagNames = {"A", "B", "C"};
     static final String[] whiteBagNames = {"X", "Y", "Z"};
-    private static final Object lock = new Object();
+    static Bag[] blackBags = new Bag[numberOfEachBag]; //Array containing black bags
+    static Bag[] whiteBags = new Bag[numberOfEachBag]; //Array containing white bags
+    static volatile boolean won = false; //Records if a player has won the game. Volatile to force compiler to check won every time
 
     /**
      * Class representing a player of the game
@@ -30,6 +30,22 @@ public class PebbleGame {
          */
         public Player(String name){
             this.hand = new ArrayList<>();
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public ArrayList<Pebble> getHand() {
+            return hand;
+        }
+
+        public void setHand(ArrayList<Pebble> hand) {
+            this.hand = hand;
+        }
+
+        public void setName(String name) {
             this.name = name;
         }
 
@@ -95,7 +111,11 @@ public class PebbleGame {
         public void refill(Bag blackBag){
             int bagIndex = blackBag.getBagIndex(); //Gets the index of the black bag in the array (to get the corresponding white bag)
             Bag whiteBagAtIndex = whiteBags[bagIndex]; //Gets the white bag at the corresponding black bag index
-            blackBag.setPebbles(whiteBagAtIndex.getPebbles()); //Sets the black bag pebbles to be the corresponding white bag pebbles
+            //blackBag.setPebbles(whiteBagAtIndex.getPebbles()); //Sets the black bag pebbles to be the corresponding white bag pebbles
+            for(int i = 0; i < whiteBagAtIndex.getPebbles().size(); i++){
+                blackBag.getPebbles().add(whiteBagAtIndex.getPebbles().get(i));
+            }
+
             whiteBagAtIndex.getPebbles().clear(); //Clears the white bags pebble array list
         }
 
@@ -163,8 +183,8 @@ public class PebbleGame {
                     won = true;
                     System.out.println(Thread.currentThread().getName() + " WON!");
                 } else {
-                    //Discards a random pebble from the players hand into corresponding white bag from the black bag in which the pebble was drawn from
 
+                    //Discards a random pebble from the players hand into corresponding white bag from the black bag in which the pebble was drawn from
                     int randomPebbleIndex = rand.nextInt(hand.size());
                     discard(randomPebbleIndex);
 
