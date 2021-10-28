@@ -189,5 +189,4 @@ public class TestPlayer {
     public void writeDiscard(){
 
     }
-
 }
