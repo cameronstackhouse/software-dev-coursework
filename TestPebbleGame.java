@@ -1,3 +1,4 @@
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
@@ -7,7 +8,7 @@ import java.util.Scanner;
 
 import static org.junit.Assert.*;
 
-public class TestPebbleGame {
+public class TestPebbleGame{
 
     @Test
     public void testGetNumPlayersValid(){

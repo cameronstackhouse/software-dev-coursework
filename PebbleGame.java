@@ -86,7 +86,7 @@ public class PebbleGame {
          * Method to discard a pebble at a given index in the users hand to its corresponding bag that it was drawn from
          * @param index index of the pebble in the hand to be discarded
          */
-        public void discard(int index) {
+        public void discard(int index, Bag[] whiteBags) {
             Pebble removedPebble = this.hand.get(index); //Gets the pebble object from the hand from the index entered
             this.hand.remove(index); //Removes the pebble from the hand
             int bagIndex = removedPebble.getBagIndex(); //Gets the array index of the bag which the pebble was drawn from
@@ -105,13 +105,13 @@ public class PebbleGame {
          * @param blackBag bag to draw the pebble from
          * @return boolean value stating if a pebble has successfully been drawn from the bag
          */
-        public boolean draw(Bag blackBag){
+        public boolean draw(Bag blackBag, Bag[] whiteBags){
             Random rand = new Random();
             synchronized (lock){
                 //Synchronises on lock to ensure data inconsistencies do not occur when taking a pebble from a black
                 //bag or refilling the black bag and modifying the corresponding white bag contents
                 if (blackBag.isEmpty()) { //Checks if the bag is empty
-                    refill(blackBag); //If so then call the refill method on the black bag
+                    refill(blackBag, whiteBags); //If so then call the refill method on the black bag
                     return false; //Returns false as a pebble has not been drawn
                 } else {
                     int randPebbleIndex = rand.nextInt(blackBag.getPebbles().size()); //Gets a random integer from 0 to the number of pebbles in selected black bag
@@ -128,7 +128,7 @@ public class PebbleGame {
          * Method to refill a black bag with its corresponding white bag (e.g black bag A is refilled with white bag X)
          * @param blackBag black bag that is being refilled
          */
-        public void refill(Bag blackBag){
+        public void refill(Bag blackBag, Bag[] whiteBags){
             int bagIndex = blackBag.getBagIndex(); //Gets the index of the black bag in the array (to get the corresponding white bag)
             Bag whiteBagAtIndex = whiteBags[bagIndex]; //Gets the white bag at the corresponding black bag index
 
@@ -209,7 +209,7 @@ public class PebbleGame {
 
             //Draws 10 pebbles into the users hand from selected black bag
             for(int i = 0; i < 10; i++){
-                draw(blackBagSelection);
+                draw(blackBagSelection, whiteBags);
             }
 
             while (!won){ //Repeats until a thread has won
@@ -219,7 +219,7 @@ public class PebbleGame {
                 } else {
                     //Discards a random pebble from the players hand into corresponding white bag from the black bag in which the pebble was drawn from
                     int randomPebbleIndex = rand.nextInt(hand.size());
-                    discard(randomPebbleIndex);
+                    discard(randomPebbleIndex, whiteBags);
 
                     //Draws a pebble from a random black bag
                     boolean pebbleDrawn = false;
@@ -228,7 +228,7 @@ public class PebbleGame {
                         int randomPebbleBag = rand.nextInt(numberOfEachBag);
                         //selects bag at bag index
                         Bag bagToDrawFrom = blackBags[randomPebbleBag];
-                        pebbleDrawn = draw(bagToDrawFrom); //Returns if user has drawn a pebble or not and
+                        pebbleDrawn = draw(bagToDrawFrom, whiteBags); //Returns if user has drawn a pebble or not and
                     }
                 }
             }
