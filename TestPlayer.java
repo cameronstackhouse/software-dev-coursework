@@ -180,13 +180,4 @@ public class TestPlayer {
         assertTrue(hasDrawn);
     }
 
-    @Test
-    public void writeDraw(){
-
-    }
-
-    @Test
-    public void writeDiscard(){
-
-    }
 }

@@ -38,8 +38,8 @@ before your very eyes!
 
 ## Testing
 
-To run and test the code, use the supplied test suite (ENTER NAME HERE). 
-This runs unit testing using JUnit4. 
+To run and test the code run the TestSuite.java class. This runs all test classes using 
+@RunWith(Suite.class). The testing framework used is JUnit 4.
 
 ## License
 
