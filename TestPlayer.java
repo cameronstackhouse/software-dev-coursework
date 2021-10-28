@@ -89,7 +89,9 @@ public class TestPlayer {
 
     @Test
     public void testSetHand(){
+        p.setHand(new ArrayList<>());
 
+        assertEquals(0, p.getHand().size());
     }
 
     @Test
@@ -101,11 +103,21 @@ public class TestPlayer {
 
     @Test
     public void testDiscard(){
-        int discardIndex = 0;
         p.discard(0, whiteBags);
         p.discard(0, whiteBags);
 
         assertEquals(3, p.getHand().size());
+    }
+
+    @Test
+    public void testDiscardEmptyHand(){
+        p.setHand(new ArrayList<>());
+
+        try {
+            p.discard(0, whiteBags);
+            fail();
+
+        }catch (IndexOutOfBoundsException | NullPointerException e){}
     }
 
     @Test
@@ -154,7 +166,18 @@ public class TestPlayer {
     @Test
     public void testDrawEmptyBag(){
         boolean hasDrawn;
+        blackBags[0].setPebbles(new ArrayList<>());
+        whiteBags[0].getPebbles().add(new Pebble(2, 0));
 
+        hasDrawn = p.draw(blackBags[0], whiteBags);
+
+        assertFalse(hasDrawn); //Checks if a pebble has been drawn, shouldn't be drawn as bag is empty
+
+        hasDrawn = p.draw(blackBags[0], whiteBags); //Tries to draw again as the black bag should've been refilled
+
+        //Asserts a pebble has been drawn and added to the players hand
+        assertEquals(6, p.getHand().size());
+        assertTrue(hasDrawn);
     }
 
     @Test
