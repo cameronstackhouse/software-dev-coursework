@@ -233,7 +233,6 @@ public class PebbleGame {
                 }
             }
         }
-
     }
 
     /**
@@ -358,7 +357,7 @@ public class PebbleGame {
     /**
      * Method containing an error message if the CSV file can't be found with a given filepath
      */
-    private static void csvNotFoundError(){
+    public static void csvNotFoundError(){
         System.out.println("No such file exists.");
     }
 

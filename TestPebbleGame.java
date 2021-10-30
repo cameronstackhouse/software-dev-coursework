@@ -259,4 +259,9 @@ public class TestPebbleGame{
             fail();
         } catch (NoSuchElementException e){}
     }
+
+    @Test
+    public void testCsvNotFoundError(){
+        PebbleGame.csvNotFoundError();
+    }
 }
